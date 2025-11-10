@@ -116,6 +116,12 @@ private slots:
     void onLessonCompleted(int totalXP, int exercisesCompleted);
 
     /**
+     * Handle "Next Lesson" request from completion screen
+     * Starts a new lesson session with the same skill
+     */
+    void onNewLessonRequested();
+
+    /**
      * Update status bar with current stats
      * Shows XP and streak in status bar
      */

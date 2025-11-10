@@ -19,6 +19,7 @@ LessonView::LessonView(QWidget* parent)
     , translateInput(nullptr)
     , tileListWidget(nullptr)
     , currentExercise(nullptr)
+    , nextLessonButton(nullptr)
 {
     setupUI();
 }
@@ -216,6 +217,33 @@ void LessonView::setupUI() {
     );
     connect(nextButton, &QPushButton::clicked, this, &LessonView::onNextClicked);
     buttonLayout->addWidget(nextButton);
+
+    // Next Lesson button (shown on completion screen)
+    nextLessonButton = new QPushButton("➜ Start Next Lesson", this);
+    nextLessonButton->setMinimumHeight(50);
+    nextLessonButton->setVisible(false);
+    nextLessonButton->setStyleSheet(
+        "QPushButton { "
+        "   background-color: #FF9800; "
+        "   color: white; "
+        "   border: none; "
+        "   border-radius: 25px; "
+        "   padding: 15px 30px; "
+        "   font-size: 14px; "
+        "   font-weight: bold; "
+        "   text-transform: uppercase; "
+        "} "
+        "QPushButton:hover { "
+        "   background-color: #FB8C00; "
+        "   transform: scale(1.02); "
+        "} "
+        "QPushButton:pressed { "
+        "   background-color: #F57C00; "
+        "}"
+    );
+    connect(nextLessonButton, &QPushButton::clicked, [this]() {
+        emit newLessonRequested();
+    });
 
     mainLayout->addLayout(buttonLayout);
     setLayout(mainLayout);
@@ -460,13 +488,29 @@ void LessonView::showCompletionScreen(int totalXP, int exercisesCompleted) {
         "padding: 8px 20px; border-radius: 15px; "
         "font-size: 14px; font-weight: bold; }"
     );
-    
+
     promptLabel->setText("🏆 Lesson Complete! 🏆");
     promptLabel->setStyleSheet(
         "QLabel { color: #333; font-size: 24px; font-weight: bold; "
         "padding: 20px; }"
     );
-    
+
+    // Show Next Lesson button (at orange line location)
+    if (nextLessonButton) {
+        nextLessonButton->setVisible(true);
+        inputLayout->addWidget(nextLessonButton);
+
+        // Add fade-in animation
+        QGraphicsOpacityEffect* effect = new QGraphicsOpacityEffect(nextLessonButton);
+        nextLessonButton->setGraphicsEffect(effect);
+        QPropertyAnimation* animation = new QPropertyAnimation(effect, "opacity");
+        animation->setDuration(400);
+        animation->setStartValue(0.0);
+        animation->setEndValue(1.0);
+        animation->setEasingCurve(QEasingCurve::OutCubic);
+        animation->start(QPropertyAnimation::DeleteWhenStopped);
+    }
+
     feedbackCard->setVisible(true);
     feedbackLabel->setText(
         QString("Amazing work! You completed %1 exercises\n"
@@ -500,6 +544,7 @@ void LessonView::reset() {
     submitButton->setVisible(true);
     submitButton->setEnabled(true);
     nextButton->setVisible(false);
+    nextLessonButton->setVisible(false);
     currentExercise = nullptr;
     typeLabel->setText("");
 

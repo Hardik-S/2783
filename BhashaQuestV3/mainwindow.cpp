@@ -234,6 +234,10 @@ void MainWindow::wireSignalsAndSlots() {
     connect(lessonView, &LessonView::nextExerciseRequested,
             appController, &AppController::loadNextExercise);
 
+    // LessonView → MainWindow connection for next lesson
+    connect(lessonView, &LessonView::newLessonRequested,
+            this, &MainWindow::onNewLessonRequested);
+
     // AppController → LessonView connections
     connect(appController, &AppController::exerciseChanged,
             lessonView, &LessonView::updateExercise);
@@ -375,6 +379,47 @@ void MainWindow::onLessonCompleted(int totalXP, int exercisesCompleted) {
 
     // Refresh profile view
     profileView->updateProfile(appController->getProfile());
+}
+
+void MainWindow::onNewLessonRequested() {
+    // Check if we have a current skill selected
+    if (currentSkillId.isEmpty()) {
+        QMessageBox::information(this, "No Skill Selected",
+            "Please select a skill from the dropdown to start a lesson.");
+
+        // Switch back to lesson view so user can select a skill
+        stackedWidget->setCurrentIndex(0);
+        backToLessonButton->setVisible(false);
+        return;
+    }
+
+    // Get exercises for the same skill
+    QList<Exercise*> exercises = contentRepository->getExercisesForSkill(currentSkillId);
+
+    if (exercises.isEmpty()) {
+        QMessageBox::warning(this, "No Exercises",
+            "No exercises available for this skill.");
+        return;
+    }
+
+    // Reset lesson view
+    lessonView->reset();
+
+    // Start new lesson with same skill
+    appController->startLesson(currentSkillId, exercises);
+
+    // Update progress display
+    lessonView->updateProgress(0, exercises.size());
+
+    // Ensure we're on lesson view
+    stackedWidget->setCurrentIndex(0);
+    backToLessonButton->setVisible(false);
+
+    // Update status
+    QString skillName = contentRepository->getSkillName(currentSkillId);
+    statusBar()->showMessage(
+        QString("▶️ Starting next lesson for %1! Keep up the momentum! 🚀").arg(skillName)
+    );
 }
 
 void MainWindow::updateStatusBar(int xp, int streak) {

@@ -50,6 +50,7 @@ private:
     QProgressBar* progressBar;          // Shows N/M progress
     QPushButton* submitButton;          // Submit answer button
     QPushButton* nextButton;            // Next exercise button (visible after grading)
+    QPushButton* nextLessonButton;      // Start next lesson button (shown on completion)
     QLabel* progressLabel;              // Text label "Exercise N of M"
     QLabel* typeLabel;                  // Exercise type badge
     QWidget* feedbackCard;              // Feedback container

@@ -48,10 +48,23 @@ make
 ## Current Status
 
 - Project copied from 7807/BhashaQuestv2/BhashaQuest
-- Ready for UI enhancements and other improvements
+- **THIS IS THE NEW PRIMARY WORKING DIRECTORY FOR ALL BHASHAQUEST DEVELOPMENT**
+- All changes, builds, and testing should happen in 2783/BhashaQuestV3
+- Do NOT make changes to 7807 directory
 - All SOLID, DRY, KISS, and YAGNI principles apply
+
+## Recent Changes
+
+### Next Lesson Button Feature (2025-11-10)
+- Added "Next Lesson" button to completion screen
+- Orange button (#FF9800) positioned at completion screen
+- Allows users to immediately start another lesson with the same skill
+- Changes made to:
+  - `src/ui/LessonView.h/cpp` - Added button UI
+  - `mainwindow.h/cpp` - Added signal/slot wiring
 
 ---
 
 **Last Updated:** 2025-11-10
-**Working Directory Set:** 2783/BhashaQuestV3
+**Active Working Directory:** 2783/BhashaQuestV3
+**Source Reference:** 7807/BhashaQuestv2/BhashaQuest (do not modify)
