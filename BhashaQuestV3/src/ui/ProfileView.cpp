@@ -30,8 +30,8 @@ void ProfileView::setupUI() {
     
     // Create main layout
     mainLayout = new QVBoxLayout(this);
-    mainLayout->setSpacing(25);
-    mainLayout->setContentsMargins(30, 30, 30, 30);
+    mainLayout->setSpacing(15);
+    mainLayout->setContentsMargins(20, 20, 20, 20);
 
     // Title with modern styling
     QLabel* titleLabel = new QLabel("Your Learning Journey", this);
@@ -49,7 +49,7 @@ void ProfileView::setupUI() {
         "QWidget { "
         "   background-color: white; "
         "   border-radius: 20px; "
-        "   padding: 20px; "
+        "   padding: 15px; "
         "}"
     );
     
@@ -70,10 +70,10 @@ void ProfileView::setupUI() {
         "QLabel { "
         "   background-color: #E3F2FD; "
         "   border-radius: 50px; "
-        "   padding: 20px; "
-        "   font-size: 40px; "
-        "   max-width: 100px; "
-        "   max-height: 100px; "
+        "   padding: 15px; "
+        "   font-size: 35px; "
+        "   max-width: 80px; "
+        "   max-height: 80px; "
         "}"
     );
     profileLayout->addWidget(avatarLabel, 0, Qt::AlignCenter);
@@ -187,7 +187,7 @@ void ProfileView::setupUI() {
 
 QWidget* ProfileView::createStatCard(const QString& icon, const QString& label, const QString& value, const QString& color) {
     QWidget* card = new QWidget(this);
-    card->setMinimumHeight(120);
+    card->setMinimumHeight(100);
     card->setStyleSheet(
         QString("QWidget { "
         "   background-color: white; "
@@ -203,7 +203,7 @@ QWidget* ProfileView::createStatCard(const QString& icon, const QString& label, 
     // Icon
     QLabel* iconLabel = new QLabel(icon, card);
     iconLabel->setAlignment(Qt::AlignCenter);
-    iconLabel->setStyleSheet(QString("QLabel { font-size: 30px; color: %1; }").arg(color));
+    iconLabel->setStyleSheet(QString("QLabel { font-size: 24px; color: %1; }").arg(color));
     layout->addWidget(iconLabel);
 
     // Label
