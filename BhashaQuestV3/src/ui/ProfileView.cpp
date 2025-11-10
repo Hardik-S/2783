@@ -132,10 +132,11 @@ void ProfileView::setupUI() {
     
     QWidget* skillsContainer = new QWidget();
     skillsLayout = new QVBoxLayout(skillsContainer);
-    skillsLayout->setSpacing(15);
+    skillsLayout->setSpacing(10);
+    skillsLayout->setContentsMargins(0, 0, 0, 0);
     scrollArea->setWidget(skillsContainer);
 
-    mainLayout->addWidget(scrollArea);
+    mainLayout->addWidget(scrollArea, 1);
 
     // Developer Tools section (Time Travel)
     QWidget* devToolsCard = new QWidget(this);
@@ -180,8 +181,46 @@ void ProfileView::setupUI() {
     connect(timeTravelBtn, &QPushButton::clicked, this, &ProfileView::onTimeTravelClicked);
     devLayout->addWidget(timeTravelBtn);
 
+    devToolsCard->setVisible(false);  // Hidden by default
+
+    // Developer tools toggle button
+    QPushButton* devToggleBtn = new QPushButton("🔧", this);
+    devToggleBtn->setFixedSize(35, 35);
+    devToggleBtn->setToolTip("Toggle Developer Tools");
+    devToggleBtn->setStyleSheet(
+        "QPushButton { "
+        "   background-color: rgba(255, 255, 255, 0.3); "
+        "   color: white; "
+        "   border: none; "
+        "   border-radius: 17px; "
+        "   font-size: 16px; "
+        "   font-weight: bold; "
+        "} "
+        "QPushButton:hover { "
+        "   background-color: rgba(255, 255, 255, 0.5); "
+        "} "
+        "QPushButton:pressed { "
+        "   background-color: rgba(255, 255, 255, 0.7); "
+        "}"
+    );
+    connect(devToggleBtn, &QPushButton::clicked, this, [devToolsCard]() {
+        devToolsCard->setVisible(!devToolsCard->isVisible());
+    });
+
+    // Create a horizontal layout for the title and toggle button
+    QHBoxLayout* titleLayout = new QHBoxLayout();
+    titleLayout->addWidget(titleLabel);
+    titleLayout->addStretch();
+    titleLayout->addWidget(devToggleBtn);
+
+    // We need to replace the title widget in the main layout with this new layout
+    // First, remove the title widget
+    mainLayout->removeWidget(titleLabel);
+    mainLayout->insertLayout(0, titleLayout);
+
     mainLayout->addWidget(devToolsCard);
 
+    setMinimumSize(800, 600);  // Prevent window from being too small
     setLayout(mainLayout);
 }
 
