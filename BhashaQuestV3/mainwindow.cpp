@@ -27,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent)
     , skillSelector(nullptr)
 {
     ui->setupUi(this);
+    this->setStyleSheet("QMainWindow { background-color: #66CC99; }");
 
     // Set window properties
     setWindowTitle("BhashaQuest - Language Learning");

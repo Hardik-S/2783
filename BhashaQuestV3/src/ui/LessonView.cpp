@@ -29,7 +29,7 @@ LessonView::~LessonView() {
 
 void LessonView::setupUI() {
     // Set background color for the entire widget
-    setStyleSheet("QWidget { background-color: #f5f5f5; }");
+    setStyleSheet("QWidget { background-color: #66cc99; }");
 
     // Create main layout with better spacing
     mainLayout = new QVBoxLayout(this);
@@ -48,7 +48,7 @@ void LessonView::setupUI() {
     QVBoxLayout* progressCardLayout = new QVBoxLayout(progressCard);
 
     // Progress label with improved styling
-    progressLabel = new QLabel("Exercise 1 of 0", progressCard);
+    progressLabel = new QLabel("", progressCard);
     QFont progressFont;
     progressFont.setPointSize(11);
     progressFont.setBold(true);
@@ -67,7 +67,7 @@ void LessonView::setupUI() {
     progressBar->setStyleSheet(
         "QProgressBar { "
         "   border: none; "
-        "   background-color: #e0e0e0; "
+        "   background-color: #66cc99; "
         "   border-radius: 4px; "
         "} "
         "QProgressBar::chunk { "
@@ -260,8 +260,8 @@ void LessonView::createWelcomePanel() {
 
     // Welcome message
     QLabel* welcomeTextLabel = new QLabel(
-        "Welcome to your language learning journey!\n\n"
-        "👆 Select a skill from the dropdown above and click 'Start Lesson' to begin.",
+        "Welcome to your language learning journey!\n"
+        "👆 Select a skill and click Start Lesson!",
         welcomePanel
     );
     QFont welcomeFont;
@@ -277,8 +277,8 @@ void LessonView::createWelcomePanel() {
 
     // Features section
     QLabel* featuresLabel = new QLabel(
-        "✨ What You'll Get:\n\n"
-        "🎯 Interactive Exercises  •  📊 Instant Feedback  •  📈 Track Your Progress",
+        "✨ Built for fun learning:\n\n"
+        "🎯 Interactive Exercises  •  📈 Track Your Progress",
         welcomePanel
     );
     QFont featuresFont;
