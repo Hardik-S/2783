@@ -54,6 +54,7 @@ private:
     QLabel* typeLabel;                  // Exercise type badge
     QWidget* feedbackCard;              // Feedback container
     QWidget* welcomePanel;              // Welcome screen shown initially
+    QWidget* exerciseCard;              // Main exercise container
 
     // UI Components - Dynamic (change per exercise type)
     QWidget* inputContainer;            // Container for dynamic input widgets

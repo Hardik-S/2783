@@ -270,6 +270,9 @@ void MainWindow::populateSkillSelector() {
     // Clear existing items
     skillSelector->clear();
 
+    // Add placeholder item first
+    skillSelector->addItem("-- Select a Skill to Begin --", "");  // Empty skillId for placeholder
+
     // Get available skills
     QList<QString> skills = contentRepository->getAvailableSkills();
 
@@ -288,8 +291,9 @@ void MainWindow::populateSkillSelector() {
         skillSelector->addItem(displayText, skillId);  // Store skillId as user data
     }
 
-    // Set first skill as current
-    currentSkillId = skills.first();
+    // Default to placeholder (index 0), user must select a skill
+    skillSelector->setCurrentIndex(0);
+    currentSkillId = "";  // No skill selected initially
 }
 
 // ========== Private Slots ==========
@@ -303,6 +307,13 @@ void MainWindow::onStartLessonClicked() {
     }
 
     currentSkillId = skillSelector->currentData().toString();
+
+    // Check if placeholder is selected (empty skillId)
+    if (currentSkillId.isEmpty()) {
+        QMessageBox::information(this, "Select a Skill",
+            "Please select a skill from the dropdown to begin your lesson.");
+        return;
+    }
 
     // Get exercises for selected skill
     QList<Exercise*> exercises = contentRepository->getExercisesForSkill(currentSkillId);

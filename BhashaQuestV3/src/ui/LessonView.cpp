@@ -82,9 +82,10 @@ void LessonView::setupUI() {
     // Create welcome panel (shown initially)
     createWelcomePanel();
     mainLayout->addWidget(welcomePanel);
+    welcomePanel->setVisible(true);  // Explicitly show welcome panel on startup
 
     // Create main exercise card
-    QWidget* exerciseCard = new QWidget(this);
+    exerciseCard = new QWidget(this);
     exerciseCard->setStyleSheet(
         "QWidget { "
         "   background-color: white; "
@@ -130,7 +131,8 @@ void LessonView::setupUI() {
     exerciseCardLayout->addWidget(inputContainer);
 
     mainLayout->addWidget(exerciseCard);
-    
+    exerciseCard->setVisible(false);  // Hidden initially until lesson starts
+
     // Add stretch
     mainLayout->addStretch();
 
@@ -259,7 +261,7 @@ void LessonView::createWelcomePanel() {
     // Welcome message
     QLabel* welcomeTextLabel = new QLabel(
         "Welcome to your language learning journey!\n\n"
-        "Select a skill from the dropdown above and click 'Start Lesson' to begin.",
+        "👆 Select a skill from the dropdown above and click 'Start Lesson' to begin.",
         welcomePanel
     );
     QFont welcomeFont;
@@ -307,6 +309,9 @@ void LessonView::updateExercise(Exercise* exercise) {
 
     // Hide welcome panel when exercise loads
     setWelcomePanelVisible(false);
+
+    // Show exercise card now that we have an exercise
+    exerciseCard->setVisible(true);
 
     // Clear previous widgets and feedback
     clearInputWidgets();
