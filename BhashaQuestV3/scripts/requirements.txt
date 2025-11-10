@@ -1,0 +1,7 @@
+# Python dependencies for BhashaQuest scripts
+
+# Text-to-Speech library for audio generation
+gtts>=2.3.0
+
+# Optional: For audio format conversion (if needed)
+# pydub>=0.25.1

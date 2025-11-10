@@ -1,0 +1,334 @@
+{
+  "skills": [
+    {
+      "id": "nepali-greetings",
+      "name": "Greetings & Basics",
+      "language": "Nepali",
+      "exercises": [
+        {
+          "id": "ex-greeting-01",
+          "type": "MCQ",
+          "prompt": "Select the correct translation for 'Hello' (formal greeting)",
+          "skillId": "nepali-greetings",
+          "options": ["नमस्ते", "धन्यवाद", "अलविदा", "कृपया"],
+          "correctIndex": 0,
+          "difficulty": 1,
+          "audioFile": "namaste.mp3"
+        },
+        {
+          "id": "ex-greeting-02",
+          "type": "Translate",
+          "prompt": "Translate to Nepali: water",
+          "skillId": "nepali-greetings",
+          "correctAnswers": ["पानी", "pani", "paani"],
+          "difficulty": 2,
+          "audioFile": "pani.mp3"
+        },
+        {
+          "id": "ex-greeting-03",
+          "type": "TileOrder",
+          "prompt": "Arrange the words to say 'Thank you very much' in Nepali",
+          "skillId": "nepali-greetings",
+          "tiles": ["धन्यवाद", "धेरै"],
+          "correctOrder": ["धेरै", "धन्यवाद"],
+          "difficulty": 2,
+          "audioFile": "dhanyabad.mp3"
+        },
+        {
+          "id": "ex-greeting-04",
+          "type": "MCQ",
+          "prompt": "What does 'कस्तो छ?' mean in English?",
+          "skillId": "nepali-greetings",
+          "options": ["How are you?", "What is your name?", "Where are you from?", "Thank you"],
+          "correctIndex": 0,
+          "difficulty": 2,
+          "audioFile": "kasto-cha.mp3"
+        },
+        {
+          "id": "ex-greeting-05",
+          "type": "Translate",
+          "prompt": "Translate to Nepali: Good morning",
+          "skillId": "nepali-greetings",
+          "correctAnswers": ["शुभ प्रभात", "shubha prabhat", "subha prabhat"],
+          "difficulty": 2,
+          "audioFile": "shubha-prabhat.mp3"
+        }
+      ]
+    },
+    {
+      "id": "nepali-food",
+      "name": "Food & Dining",
+      "language": "Nepali",
+      "exercises": [
+        {
+          "id": "ex-food-01",
+          "type": "Translate",
+          "prompt": "Translate to Nepali: rice",
+          "skillId": "nepali-food",
+          "correctAnswers": ["भात", "bhat", "bhaat"],
+          "difficulty": 1,
+          "audioFile": "bhat.mp3"
+        },
+        {
+          "id": "ex-food-02",
+          "type": "MCQ",
+          "prompt": "Select the correct translation for 'I am hungry'",
+          "skillId": "nepali-food",
+          "options": ["मलाई भोक लाग्यो", "मलाई तिर्खा लाग्यो", "म ठीक छु", "म खुशी छु"],
+          "correctIndex": 0,
+          "difficulty": 3,
+          "audioFile": "bhok-lagyo.mp3"
+        },
+        {
+          "id": "ex-food-03",
+          "type": "TileOrder",
+          "prompt": "Arrange to say 'I want tea' in Nepali",
+          "skillId": "nepali-food",
+          "tiles": ["चिया", "चाहिन्छ", "मलाई"],
+          "correctOrder": ["मलाई", "चिया", "चाहिन्छ"],
+          "difficulty": 3,
+          "audioFile": "chiya-chahincha.mp3"
+        },
+        {
+          "id": "ex-food-04",
+          "type": "MCQ",
+          "prompt": "What does 'दाल' mean?",
+          "skillId": "nepali-food",
+          "options": ["Rice", "Lentils", "Bread", "Vegetables"],
+          "correctIndex": 1,
+          "difficulty": 1,
+          "audioFile": "dal.mp3"
+        },
+        {
+          "id": "ex-food-05",
+          "type": "Translate",
+          "prompt": "Translate to Nepali: vegetables",
+          "skillId": "nepali-food",
+          "correctAnswers": ["तरकारी", "tarkari"],
+          "difficulty": 2,
+          "audioFile": "tarkari.mp3"
+        }
+      ]
+    },
+    {
+      "id": "nepali-numbers",
+      "name": "Numbers & Counting",
+      "language": "Nepali",
+      "exercises": [
+        {
+          "id": "ex-num-01",
+          "type": "MCQ",
+          "prompt": "What number does 'एक' represent?",
+          "skillId": "nepali-numbers",
+          "options": ["1", "2", "3", "10"],
+          "correctIndex": 0,
+          "difficulty": 1,
+          "audioFile": "ek.mp3"
+        },
+        {
+          "id": "ex-num-02",
+          "type": "Translate",
+          "prompt": "Translate to Nepali: five",
+          "skillId": "nepali-numbers",
+          "correctAnswers": ["पाँच", "panch", "paanch"],
+          "difficulty": 2,
+          "audioFile": "panch.mp3"
+        },
+        {
+          "id": "ex-num-03",
+          "type": "TileOrder",
+          "prompt": "Arrange the numbers in order: 2, 1, 3 (in Nepali)",
+          "skillId": "nepali-numbers",
+          "tiles": ["दुई", "एक", "तीन"],
+          "correctOrder": ["एक", "दुई", "तीन"],
+          "difficulty": 2,
+          "audioFile": "counting.mp3"
+        },
+        {
+          "id": "ex-num-04",
+          "type": "MCQ",
+          "prompt": "Select the Nepali word for 'ten'",
+          "skillId": "nepali-numbers",
+          "options": ["नौ", "दश", "आठ", "सात"],
+          "correctIndex": 1,
+          "difficulty": 2,
+          "audioFile": "das.mp3"
+        },
+        {
+          "id": "ex-num-05",
+          "type": "Translate",
+          "prompt": "Translate to Nepali: seven",
+          "skillId": "nepali-numbers",
+          "correctAnswers": ["सात", "saat", "sat"],
+          "difficulty": 2,
+          "audioFile": "saat.mp3"
+        }
+      ]
+    },
+    {
+      "id": "kannada-greetings",
+      "name": "Greetings & Basics",
+      "language": "Kannada",
+      "exercises": [
+        {
+          "id": "ex-kannada-greeting-01",
+          "type": "MCQ",
+          "prompt": "Select the correct translation for 'Hello' (formal greeting)",
+          "skillId": "kannada-greetings",
+          "options": ["ನಮಸ್ಕಾರ", "ಧನ್ಯವಾದ", "ವಿದಾಯ", "ದಯವಿಟ್ಟು"],
+          "correctIndex": 0,
+          "difficulty": 1,
+          "audioFile": "namaskara.mp3"
+        },
+        {
+          "id": "ex-kannada-greeting-02",
+          "type": "Translate",
+          "prompt": "Translate to Kannada: Thank you",
+          "skillId": "kannada-greetings",
+          "correctAnswers": ["ಧನ್ಯವಾದ", "dhanyavada", "dhanyavaada"],
+          "difficulty": 1,
+          "audioFile": "dhanyavada.mp3"
+        },
+        {
+          "id": "ex-kannada-greeting-03",
+          "type": "TileOrder",
+          "prompt": "Arrange to say 'How are you?' in Kannada",
+          "skillId": "kannada-greetings",
+          "tiles": ["ಹೇಗಿದ್ದೀರಿ", "ನೀವು"],
+          "correctOrder": ["ನೀವು", "ಹೇಗಿದ್ದೀರಿ"],
+          "difficulty": 2,
+          "audioFile": "neevu-hegiddiri.mp3"
+        },
+        {
+          "id": "ex-kannada-greeting-04",
+          "type": "MCQ",
+          "prompt": "What does 'ಶುಭೋದಯ' mean?",
+          "skillId": "kannada-greetings",
+          "options": ["Good morning", "Good night", "Good evening", "Goodbye"],
+          "correctIndex": 0,
+          "difficulty": 2,
+          "audioFile": "shubhodaya.mp3"
+        },
+        {
+          "id": "ex-kannada-greeting-05",
+          "type": "Translate",
+          "prompt": "Translate to Kannada: Please",
+          "skillId": "kannada-greetings",
+          "correctAnswers": ["ದಯವಿಟ್ಟು", "dayavittu"],
+          "difficulty": 1,
+          "audioFile": "dayavittu.mp3"
+        }
+      ]
+    },
+    {
+      "id": "kannada-food",
+      "name": "Food & Dining",
+      "language": "Kannada",
+      "exercises": [
+        {
+          "id": "ex-kannada-food-01",
+          "type": "Translate",
+          "prompt": "Translate to Kannada: Water",
+          "skillId": "kannada-food",
+          "correctAnswers": ["ನೀರು", "neeru", "niru"],
+          "difficulty": 1,
+          "audioFile": "neeru.mp3"
+        },
+        {
+          "id": "ex-kannada-food-02",
+          "type": "MCQ",
+          "prompt": "Select the correct translation for 'Rice'",
+          "skillId": "kannada-food",
+          "options": ["ಅನ್ನ", "ರೊಟ್ಟಿ", "ಸಾರು", "ಹಾಲು"],
+          "correctIndex": 0,
+          "difficulty": 1,
+          "audioFile": "anna.mp3"
+        },
+        {
+          "id": "ex-kannada-food-03",
+          "type": "TileOrder",
+          "prompt": "Arrange to say 'I am hungry' in Kannada",
+          "skillId": "kannada-food",
+          "tiles": ["ಹಸಿವಾಗಿದೆ", "ನನಗೆ"],
+          "correctOrder": ["ನನಗೆ", "ಹಸಿವಾಗಿದೆ"],
+          "difficulty": 3,
+          "audioFile": "nanage-hasivaagide.mp3"
+        },
+        {
+          "id": "ex-kannada-food-04",
+          "type": "MCQ",
+          "prompt": "What does 'ಕಾಫಿ' mean?",
+          "skillId": "kannada-food",
+          "options": ["Tea", "Coffee", "Milk", "Juice"],
+          "correctIndex": 1,
+          "difficulty": 1,
+          "audioFile": "coffee.mp3"
+        },
+        {
+          "id": "ex-kannada-food-05",
+          "type": "Translate",
+          "prompt": "Translate to Kannada: Vegetables",
+          "skillId": "kannada-food",
+          "correctAnswers": ["ತರಕಾರಿ", "tarakari", "tarkari"],
+          "difficulty": 2,
+          "audioFile": "tarakari.mp3"
+        }
+      ]
+    },
+    {
+      "id": "kannada-numbers",
+      "name": "Numbers & Counting",
+      "language": "Kannada",
+      "exercises": [
+        {
+          "id": "ex-kannada-num-01",
+          "type": "MCQ",
+          "prompt": "What number does 'ಒಂದು' represent?",
+          "skillId": "kannada-numbers",
+          "options": ["1", "2", "3", "5"],
+          "correctIndex": 0,
+          "difficulty": 1,
+          "audioFile": "ondu.mp3"
+        },
+        {
+          "id": "ex-kannada-num-02",
+          "type": "Translate",
+          "prompt": "Translate to Kannada: Five",
+          "skillId": "kannada-numbers",
+          "correctAnswers": ["ಐದು", "aidu", "aidhu"],
+          "difficulty": 2,
+          "audioFile": "aidu.mp3"
+        },
+        {
+          "id": "ex-kannada-num-03",
+          "type": "TileOrder",
+          "prompt": "Arrange numbers 1-3 in order (in Kannada)",
+          "skillId": "kannada-numbers",
+          "tiles": ["ಮೂರು", "ಒಂದು", "ಎರಡು"],
+          "correctOrder": ["ಒಂದು", "ಎರಡು", "ಮೂರು"],
+          "difficulty": 2,
+          "audioFile": "ondu-eradu-mooru.mp3"
+        },
+        {
+          "id": "ex-kannada-num-04",
+          "type": "MCQ",
+          "prompt": "Select the Kannada word for 'Ten'",
+          "skillId": "kannada-numbers",
+          "options": ["ಎಂಟು", "ಒಂಬತ್ತು", "ಹತ್ತು", "ಏಳು"],
+          "correctIndex": 2,
+          "difficulty": 2,
+          "audioFile": "hattu.mp3"
+        },
+        {
+          "id": "ex-kannada-num-05",
+          "type": "Translate",
+          "prompt": "Translate to Kannada: Two",
+          "skillId": "kannada-numbers",
+          "correctAnswers": ["ಎರಡು", "eradu", "eraDu"],
+          "difficulty": 1,
+          "audioFile": "eradu.mp3"
+        }
+      ]
+    }
+  ]
+}
