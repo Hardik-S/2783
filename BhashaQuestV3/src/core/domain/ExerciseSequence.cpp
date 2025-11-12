@@ -25,6 +25,10 @@ bool ExerciseSequence::Iterator::operator!=(const Iterator& other) const {
     return sequence != other.sequence || index != other.index;
 }
 
+bool ExerciseSequence::Iterator::operator==(const Iterator& other) const {
+    return sequence == other.sequence && index == other.index;
+}
+
 int ExerciseSequence::Iterator::position() const {
     return index;
 }
@@ -58,4 +62,3 @@ ExerciseSequence::Iterator ExerciseSequence::begin() const {
 ExerciseSequence::Iterator ExerciseSequence::end() const {
     return Iterator(this, exerciseList.size());
 }
-
