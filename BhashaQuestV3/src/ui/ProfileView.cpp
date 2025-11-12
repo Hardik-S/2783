@@ -55,32 +55,41 @@ void ProfileView::setupUI() {
     mainLayout->addWidget(focusFrame);
 
     QFrame* profileCard = new QFrame(this);
-    profileCard->setStyleSheet("QFrame { background-color: white; border-radius: 16px; padding: 18px; }");
-    QVBoxLayout* profileLayout = new QVBoxLayout(profileCard);
-    profileLayout->setSpacing(8);
-    profileLayout->setContentsMargins(0, 0, 0, 0);
+    profileCard->setStyleSheet("QFrame { background-color: white; border-radius: 16px; padding: 16px; }");
+    profileCard->setMinimumHeight(110);
+    QHBoxLayout* profileLayout = new QHBoxLayout(profileCard);
+    profileLayout->setSpacing(20);
+    profileLayout->setContentsMargins(12, 12, 12, 12);
 
     QLabel* avatarLabel = new QLabel("👤", profileCard);
+    avatarLabel->setFixedSize(70, 70);
     avatarLabel->setAlignment(Qt::AlignCenter);
-    avatarLabel->setStyleSheet("font-size: 32px;");
-    profileLayout->addWidget(avatarLabel, 0, Qt::AlignCenter);
+    avatarLabel->setStyleSheet(
+        "QLabel { background-color: #e3f2fd; border-radius: 35px; font-size: 32px; }"
+    );
+    profileLayout->addWidget(avatarLabel);
+
+    QVBoxLayout* profileTextLayout = new QVBoxLayout();
+    profileTextLayout->setSpacing(4);
 
     usernameLabel = new QLabel("Player", profileCard);
     QFont nameFont;
     nameFont.setPointSize(18);
     nameFont.setBold(true);
     usernameLabel->setFont(nameFont);
-    usernameLabel->setAlignment(Qt::AlignCenter);
-    profileLayout->addWidget(usernameLabel);
+    usernameLabel->setStyleSheet("color: #333333;");
+    profileTextLayout->addWidget(usernameLabel);
 
     QLabel* taglineLabel = new QLabel(
         "Tracking streaks, XP, and the languages you care about.",
         profileCard
     );
-    taglineLabel->setWordWrap(true);
-    taglineLabel->setAlignment(Qt::AlignCenter);
     taglineLabel->setStyleSheet("color: #555555; font-size: 13px;");
-    profileLayout->addWidget(taglineLabel);
+    taglineLabel->setWordWrap(true);
+    profileTextLayout->addWidget(taglineLabel);
+
+    profileLayout->addLayout(profileTextLayout);
+    profileLayout->addStretch();
 
     mainLayout->addWidget(profileCard);
 
@@ -125,37 +134,50 @@ QProgressBar::chunk { background-color: #23a455; border-radius: 8px; }
     mainLayout->addWidget(xpFrame);
 
     QFrame* snapshotFrame = new QFrame(this);
-    snapshotFrame->setStyleSheet("QFrame { background-color: white; border-radius: 14px; padding: 16px; }");
-    QVBoxLayout* snapshotLayout = new QVBoxLayout(snapshotFrame);
-    snapshotLayout->setSpacing(8);
+    snapshotFrame->setStyleSheet("QFrame { background-color: white; border-radius: 14px; padding: 12px 14px; }");
+    snapshotFrame->setMinimumHeight(80);
+    QHBoxLayout* snapshotLayout = new QHBoxLayout(snapshotFrame);
+    snapshotLayout->setSpacing(18);
     snapshotLayout->setContentsMargins(0, 0, 0, 0);
 
+    QVBoxLayout* masteryLayout = new QVBoxLayout();
+    masteryLayout->setSpacing(5);
+
     QLabel* snapshotTitle = new QLabel("Progress Snapshot", snapshotFrame);
-    snapshotTitle->setStyleSheet("color: #333333; font-weight: bold;");
-    snapshotLayout->addWidget(snapshotTitle);
+    snapshotTitle->setStyleSheet("color: #333333; font-weight: bold; font-size: 13px;");
+    masteryLayout->addWidget(snapshotTitle);
 
     masteryValueLabel = new QLabel("Average Mastery: 0%", snapshotFrame);
-    masteryValueLabel->setStyleSheet("color: #333333;");
-    snapshotLayout->addWidget(masteryValueLabel);
+    masteryValueLabel->setStyleSheet("color: #333333; font-size: 12px;");
+    masteryLayout->addWidget(masteryValueLabel);
 
     masteryBar = new QProgressBar(snapshotFrame);
     masteryBar->setMinimum(0);
     masteryBar->setMaximum(100);
     masteryBar->setValue(0);
     masteryBar->setTextVisible(false);
+    masteryBar->setFixedHeight(12);
     masteryBar->setStyleSheet(R"(
-QProgressBar { background-color: #f0f0f0; border-radius: 8px; height: 16px; }
+QProgressBar { background-color: #f0f0f0; border-radius: 8px; }
 QProgressBar::chunk { background-color: #1ab47d; border-radius: 8px; }
 )");
-    snapshotLayout->addWidget(masteryBar);
+    masteryLayout->addWidget(masteryBar);
+
+    snapshotLayout->addLayout(masteryLayout, 3);
+
+    QVBoxLayout* summaryStatsLayout = new QVBoxLayout();
+    summaryStatsLayout->setSpacing(3);
 
     accuracyValueLabel = new QLabel("Overall Accuracy: 0%", snapshotFrame);
     accuracyValueLabel->setStyleSheet("color: #4a4a4a; font-size: 12px;");
-    snapshotLayout->addWidget(accuracyValueLabel);
+    summaryStatsLayout->addWidget(accuracyValueLabel);
 
     completionValueLabel = new QLabel("Exercises Completed: 0 / 0", snapshotFrame);
     completionValueLabel->setStyleSheet("color: #4a4a4a; font-size: 12px;");
-    snapshotLayout->addWidget(completionValueLabel);
+    summaryStatsLayout->addWidget(completionValueLabel);
+
+    snapshotLayout->addLayout(summaryStatsLayout, 1);
+    snapshotLayout->addStretch();
 
     mainLayout->addWidget(snapshotFrame);
 
