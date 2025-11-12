@@ -181,6 +181,7 @@ void MainWindow::setupUI() {
     // DRY Principle: ContentRepository resolves path automatically
     contentRepository = new ContentRepository("content.json");
     appController = new AppController(this);
+    lessonFacade = new LessonFacade(appController, contentRepository, this);
 
     // Create views
     lessonView = new LessonView(this);
@@ -228,32 +229,32 @@ void MainWindow::wireSignalsAndSlots() {
     connect(viewProfileButton, &QPushButton::clicked, this, &MainWindow::onViewProfileClicked);
     connect(backToLessonButton, &QPushButton::clicked, this, &MainWindow::onBackToLessonClicked);
 
-    // LessonView → AppController connections
+    // LessonView → LessonFacade connections
     connect(lessonView, &LessonView::answerSubmitted,
-            appController, &AppController::submitAnswer);
+            lessonFacade, &LessonFacade::submitCurrentAnswer);
     connect(lessonView, &LessonView::nextExerciseRequested,
-            appController, &AppController::loadNextExercise);
+            lessonFacade, &LessonFacade::advanceExercise);
 
     // LessonView → MainWindow connection for next lesson
     connect(lessonView, &LessonView::newLessonRequested,
             this, &MainWindow::onNewLessonRequested);
 
-    // AppController → LessonView connections
-    connect(appController, &AppController::exerciseChanged,
+    // LessonFacade → LessonView connections
+    connect(lessonFacade, &LessonFacade::exerciseChanged,
             lessonView, &LessonView::updateExercise);
-    connect(appController, &AppController::answerGraded,
+    connect(lessonFacade, &LessonFacade::answerGraded,
             lessonView, &LessonView::displayFeedback);
-    connect(appController, &AppController::progressUpdated,
+    connect(lessonFacade, &LessonFacade::progressUpdated,
             lessonView, &LessonView::updateProgress);
-    connect(appController, &AppController::lessonCompleted,
+    connect(lessonFacade, &LessonFacade::lessonCompleted,
             this, &MainWindow::onLessonCompleted);
-    connect(appController, &AppController::lessonCompleted,
+    connect(lessonFacade, &LessonFacade::lessonCompleted,
             lessonView, &LessonView::showCompletionScreen);
 
-    // AppController → ProfileView connections
-    connect(appController, &AppController::profileUpdated,
+    // LessonFacade → ProfileView connections
+    connect(lessonFacade, &LessonFacade::profileUpdated,
             profileView, &ProfileView::updateStats);
-    connect(appController, &AppController::profileUpdated,
+    connect(lessonFacade, &LessonFacade::profileUpdated,
             this, &MainWindow::updateStatusBar);
 }
 
@@ -331,9 +332,8 @@ void MainWindow::onStartLessonClicked() {
     // Reset lesson view
     lessonView->reset();
 
-    // Start lesson
-    // 3am: appController->startLesson(exercises);
-    appController->startLesson(currentSkillId, exercises);
+    // Start lesson via facade
+    lessonFacade->initializeSkillSession(currentSkillId);
 
     // Update progress display
     lessonView->updateProgress(0, exercises.size());
@@ -405,8 +405,8 @@ void MainWindow::onNewLessonRequested() {
     // Reset lesson view
     lessonView->reset();
 
-    // Start new lesson with same skill
-    appController->startLesson(currentSkillId, exercises);
+    // Start new lesson with same skill via facade
+    lessonFacade->initializeSkillSession(currentSkillId);
 
     // Update progress display
     lessonView->updateProgress(0, exercises.size());

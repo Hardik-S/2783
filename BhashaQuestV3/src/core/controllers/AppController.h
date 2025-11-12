@@ -3,12 +3,13 @@
 
 #include <QObject>
 #include <QString>
-#include <QList>
+#include <QSharedPointer>
 #include "../domain/Exercise.h"
 #include "../domain/StrategyGrader.h"
 #include "../domain/Profile.h"
 #include "../domain/SRSScheduler.h"
 #include "../domain/Result.h"
+#include "../domain/ExerciseSequence.h"
 
 /**
  * AppController - Central controller orchestrating the application logic
@@ -40,9 +41,12 @@ class AppController : public QObject {
 
 private:
     // Session state
-    Exercise* currentExercise;              // Current exercise being displayed
-    QList<Exercise*> exerciseQueue;         // Queue of exercises for current session
-    int currentExerciseIndex;               // Index in the queue
+    Exercise* currentExercise;                                      // Current exercise being displayed
+    QSharedPointer<ExerciseSequence> activeSequence;                 // Sequence driving the current session
+    ExerciseSequence::Iterator sequenceIterator;                    // Iterator for the next exercise
+    ExerciseSequence::Iterator sequenceEnd;                         // End marker for the sequence
+    int exercisesServed;                                           // Exercises that have been presented already
+    bool sessionActive;                                            // Tracks whether a session is in progress
 
     // Domain objects
     Profile* userProfile;                   // User profile and progress
@@ -61,12 +65,12 @@ public:
     // Session management
 
     /**
-     * Start a new lesson session for a specific skill
-     * Loads exercises from queue, initializes session state
+     * Start a new lesson session for a specific skill using an ExerciseSequence
+     * The sequence holds iterator-aware metadata to drive traversal without exposing QList indices.
      * @param skillId - The skill to practice
-     * @param exercises - List of exercises for this session
+     * @param sequence - Shared pointer to the ExerciseSequence for this session
      */
-    void startLesson(const QString& skillId, const QList<Exercise*>& exercises);
+    void startLesson(const QString& skillId, const QSharedPointer<ExerciseSequence>& sequence);
 
     /**
      * End the current lesson session

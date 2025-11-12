@@ -21,11 +21,13 @@ SOURCES += \
     src/core/domain/Profile.cpp \
     src/core/domain/SkillProgress.cpp \
     src/core/domain/SRSScheduler.cpp \
+    src/core/domain/ExerciseSequence.cpp \
     src/core/domain/StrategyGrader.cpp \
     src/core/domain/TileOrderExercise.cpp \
     src/core/domain/TileOrderGrader.cpp \
     src/core/domain/TranslateExercise.cpp \
     src/core/domain/TranslateGrader.cpp \
+    src/core/facade/LessonFacade.cpp \
     src/ui/HomeView.cpp \
     src/ui/LessonView.cpp \
     src/ui/ProfileView.cpp
@@ -43,11 +45,13 @@ HEADERS += \
     src/core/domain/Result.h \
     src/core/domain/SkillProgress.h \
     src/core/domain/SRSScheduler.h \
+    src/core/domain/ExerciseSequence.h \
     src/core/domain/StrategyGrader.h \
     src/core/domain/TileOrderExercise.h \
     src/core/domain/TileOrderGrader.h \
     src/core/domain/TranslateExercise.h \
     src/core/domain/TranslateGrader.h \
+    src/core/facade/LessonFacade.h \
     src/ui/HomeView.h \
     src/ui/LessonView.h \
     src/ui/ProfileView.h

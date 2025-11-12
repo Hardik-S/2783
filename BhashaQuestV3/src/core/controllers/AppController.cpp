@@ -15,7 +15,11 @@
 AppController::AppController(QObject* parent)
     : QObject(parent)
     , currentExercise(nullptr)
-    , currentExerciseIndex(0)
+    , activeSequence(nullptr)
+    , sequenceIterator()
+    , sequenceEnd()
+    , exercisesServed(0)
+    , sessionActive(false)
     , userProfile(new Profile())
     , srsScheduler(new SRSScheduler())
     , currentGrader(nullptr)
@@ -28,8 +32,7 @@ AppController::AppController(QObject* parent)
 AppController::~AppController() {
     cleanupCurrentExercise();
 
-    // Clear exercise queue without deleting (exercises owned by ContentRepository)
-    exerciseQueue.clear();
+    activeSequence.clear();
 
     // Clean up domain objects
     delete userProfile;
@@ -38,30 +41,34 @@ AppController::~AppController() {
 
 // ========== Session Management ==========
 
-void AppController::startLesson(const QString& skillId, const QList<Exercise*>& exercises) {
+void AppController::startLesson(const QString& skillId, const QSharedPointer<ExerciseSequence>& sequence) {
     // Clean up any existing session
     endLesson();
 
+    if (!sequence || sequence->isEmpty()) {
+        qDebug() << "Warning: Cannot start lesson - sequence empty";
+        return;
+    }
+
     currentSkillId = skillId;
-    exerciseQueue = exercises;
-    currentExerciseIndex = 0;
+    activeSequence = sequence;
+    sequenceIterator = activeSequence->begin();
+    sequenceEnd = activeSequence->end();
+    exercisesServed = 0;
     sessionXP = 0;  // Reset session XP
+    sessionActive = true;
 
     // Load first exercise
-    if (!exerciseQueue.isEmpty()) {
-        loadNextExercise();
-    } else {
-        qDebug() << "Warning: Started lesson with empty exercise queue";
-    }
+    loadNextExercise();
 }
 
 void AppController::endLesson() {
     // Calculate session stats
     int totalXP = sessionXP;  // Use accumulated session XP
-    int completed = currentExerciseIndex;
+    int completed = exercisesServed;
 
     // Only emit completion if we actually completed exercises
-    if (completed > 0) {
+    if (sessionActive && completed > 0) {
         // Update user's total session count
         sessionsCompletedToday++;
 
@@ -71,10 +78,13 @@ void AppController::endLesson() {
 
     // Clean up session state
     cleanupCurrentExercise();
-    exerciseQueue.clear();  // Don't delete exercises - owned by ContentRepository!
-    currentExerciseIndex = 0;
+    activeSequence.clear();
+    sequenceIterator = ExerciseSequence::Iterator();
+    sequenceEnd = ExerciseSequence::Iterator();
     currentSkillId = "";
     sessionXP = 0;
+    exercisesServed = 0;
+    sessionActive = false;
 }
 
 Exercise* AppController::getCurrentExercise() const {
@@ -82,13 +92,11 @@ Exercise* AppController::getCurrentExercise() const {
 }
 
 bool AppController::hasNextExercise() const {
-    return currentExerciseIndex < exerciseQueue.size();
+    return activeSequence && sequenceIterator != sequenceEnd;
 }
 
 bool AppController::loadNextExercise() {
-    // Check if more exercises available
-    if (!hasNextExercise()) {
-        // Lesson complete - trigger end of lesson
+    if (!activeSequence || sequenceIterator == sequenceEnd) {
         endLesson();
         return false;
     }
@@ -96,15 +104,15 @@ bool AppController::loadNextExercise() {
     // Clean up previous exercise and grader
     cleanupCurrentExercise();
 
-    // Load next exercise
-    currentExercise = exerciseQueue[currentExerciseIndex];
+    currentExercise = *sequenceIterator;
 
     if (!currentExercise) {
-        qDebug() << "Error: Null exercise at index" << currentExerciseIndex;
+        qDebug() << "Error: Found null exercise in sequence";
         return false;
     }
 
-    currentExerciseIndex++;
+    ++sequenceIterator;
+    exercisesServed = sequenceIterator.position();
 
     // Create appropriate grader for this exercise
     currentGrader = createGraderForExercise(currentExercise);
@@ -115,7 +123,7 @@ bool AppController::loadNextExercise() {
     }
 
     // Update progress display (show current as N of Total)
-    emit progressUpdated(currentExerciseIndex, exerciseQueue.size());
+    emit progressUpdated(exercisesServed, activeSequence->size());
 
     // Emit signal to update UI
     emit exerciseChanged(currentExercise);
@@ -233,9 +241,8 @@ void AppController::scheduleReview(Difficulty difficulty) {
 // ========== Utility Methods ==========
 
 QPair<int, int> AppController::getSessionProgress() const {
-    int completed = currentExerciseIndex - 1;  // Subtract 1 as index is incremented after load
-    if (completed < 0) completed = 0;
-    int total = exerciseQueue.size();
+    int completed = exercisesServed;
+    int total = activeSequence ? activeSequence->size() : 0;
     return QPair<int, int>(completed, total);
 }
 
@@ -304,7 +311,7 @@ int AppController::calculateXP(const Result& result) const {
 }
 
 void AppController::cleanupCurrentExercise() {
-    // Note: We don't delete currentExercise because it's owned by exerciseQueue/ContentRepository
+    // Note: We don't delete currentExercise because it's owned by ContentRepository
     // We just clear the pointer
     currentExercise = nullptr;
 

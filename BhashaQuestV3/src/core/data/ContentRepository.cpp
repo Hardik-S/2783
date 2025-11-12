@@ -138,6 +138,21 @@ int ContentRepository::getTotalExerciseCount() const {
     return total;
 }
 
+ExerciseSequencePtr ContentRepository::createSequenceForSkill(const QString& skillId) const {
+    return ExerciseSequencePtr::create(getExercisesForSkill(skillId));
+}
+
+ExerciseSequencePtr ContentRepository::createSequenceForReview(const QList<QString>& exerciseIds) const {
+    QList<Exercise*> sequence;
+    for (const QString& exerciseId : exerciseIds) {
+        Exercise* exercise = findExerciseById(exerciseId);
+        if (exercise) {
+            sequence.append(exercise);
+        }
+    }
+    return ExerciseSequencePtr::create(sequence);
+}
+
 // ========== Private Helper Methods ==========
 
 ContentRepository::Skill ContentRepository::parseSkill(const QJsonObject& skillJson) {
@@ -206,4 +221,15 @@ void ContentRepository::clearContent() {
     // Clear the skills map
     skills.clear();
     contentLoaded = false;
+}
+
+Exercise* ContentRepository::findExerciseById(const QString& exerciseId) const {
+    for (const Skill& skill : skills) {
+        for (Exercise* exercise : skill.exercises) {
+            if (exercise && exercise->getId() == exerciseId) {
+                return exercise;
+            }
+        }
+    }
+    return nullptr;
 }

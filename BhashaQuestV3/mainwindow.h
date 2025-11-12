@@ -8,6 +8,7 @@
 #include <QStatusBar>
 #include "src/core/controllers/AppController.h"
 #include "src/core/data/ContentRepository.h"
+#include "src/core/facade/LessonFacade.h"
 #include "src/ui/LessonView.h"
 #include "src/ui/ProfileView.h"
 
@@ -44,6 +45,7 @@ private:
     // Core components
     AppController* appController;
     ContentRepository* contentRepository;
+    LessonFacade* lessonFacade;
 
     // Views
     LessonView* lessonView;
