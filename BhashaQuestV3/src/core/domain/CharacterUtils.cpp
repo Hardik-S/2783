@@ -79,8 +79,6 @@ QStringList CharacterUtils::generateCharacterBank(
         return QStringList();
     }
 
-    int n = correctCharacters.length();
-
     // Get 3 random distractor characters
     QStringList distractors = getRandomDistractors(
         correctAnswer,

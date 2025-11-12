@@ -27,10 +27,13 @@ SOURCES += \
     src/core/domain/TileOrderGrader.cpp \
     src/core/domain/TranslateExercise.cpp \
     src/core/domain/TranslateGrader.cpp \
+    src/core/domain/CharacterUtils.cpp \
+    src/core/domain/CharacterSelectionGrader.cpp \
     src/core/facade/LessonFacade.cpp \
     src/ui/HomeView.cpp \
     src/ui/LessonView.cpp \
-    src/ui/ProfileView.cpp
+    src/ui/ProfileView.cpp \
+    src/ui/widgets/CharacterSelectionWidget.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -51,10 +54,13 @@ HEADERS += \
     src/core/domain/TileOrderGrader.h \
     src/core/domain/TranslateExercise.h \
     src/core/domain/TranslateGrader.h \
+    src/core/domain/CharacterUtils.h \
+    src/core/domain/CharacterSelectionGrader.h \
     src/core/facade/LessonFacade.h \
     src/ui/HomeView.h \
     src/ui/LessonView.h \
-    src/ui/ProfileView.h
+    src/ui/ProfileView.h \
+    src/ui/widgets/CharacterSelectionWidget.h
 
 FORMS += \
     mainwindow.ui \

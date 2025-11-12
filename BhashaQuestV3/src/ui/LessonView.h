@@ -15,6 +15,7 @@
 #include <QPropertyAnimation>
 #include "../core/domain/Exercise.h"
 #include "../core/domain/Result.h"
+#include "../core/domain/TranslateExercise.h"
 
 /**
  * LessonView - Main UI component for displaying and interacting with exercises
@@ -40,6 +41,8 @@
  * - Dynamic widget creation based on Exercise type (polymorphism)
  * - Clean separation: rendering logic in view, business logic in controller
  */
+class CharacterSelectionWidget;
+
 class LessonView : public QWidget {
     Q_OBJECT
 
@@ -68,6 +71,8 @@ private:
 
     // Translate-specific widgets
     QLineEdit* translateInput;          // Text input for translation
+
+    CharacterSelectionWidget* characterSelectionWidget; // Character picker for script entry
 
     // TileOrder-specific widgets
     QListWidget* tileListWidget;        // Draggable list for tile ordering

@@ -4,13 +4,15 @@
 #include <QLineEdit>
 
 TranslateExercise::TranslateExercise()
-    : targetLanguage("Nepali") {
+    : targetLanguage("Nepali")
+    , characterSelectionEnabled(false) {
     type = "Translate";
 }
 
 TranslateExercise::TranslateExercise(const QString& id, const QString& englishPhrase,
                                      const QStringList& correctAnswers, const QString& targetLanguage)
     : englishPhrase(englishPhrase), correctAnswers(correctAnswers), targetLanguage(targetLanguage) {
+    characterSelectionEnabled = false;
     this->id = id;
     this->type = "Translate";
     this->prompt = QString("Translate to %1: %2").arg(targetLanguage, englishPhrase);
@@ -63,4 +65,15 @@ QWidget* TranslateExercise::renderUI(QWidget* parent) {
     widget->setLayout(layout);
 
     return widget;
+}
+
+void TranslateExercise::setCharacterSet(const QStringList& characters) {
+    characterSet = characters;
+    if (!characterSet.isEmpty()) {
+        characterSelectionEnabled = true;
+    }
+}
+
+void TranslateExercise::enableCharacterSelection(bool enabled) {
+    characterSelectionEnabled = enabled && !characterSet.isEmpty();
 }

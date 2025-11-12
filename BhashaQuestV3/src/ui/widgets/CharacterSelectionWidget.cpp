@@ -7,6 +7,7 @@
 #include <QFont>
 #include <QDebug>
 #include <stdexcept>
+#include <QLayoutItem>
 
 CharacterSelectionWidget::CharacterSelectionWidget(
     const QString& correctAnswer,
@@ -136,10 +137,18 @@ void CharacterSelectionWidget::setupUI() {
 }
 
 void CharacterSelectionWidget::createCharacterBank() {
-    // Clear existing buttons
-    while (QPushButton* btn = qobject_cast<QPushButton*>(charactersLayout->takeAt(0)->widget())) {
-        disconnect(btn, nullptr, this, nullptr);
-        delete btn;
+    // Clear existing buttons (and stretch) safely
+    while (charactersLayout->count() > 0) {
+        QLayoutItem* item = charactersLayout->takeAt(0);
+        if (!item) {
+            continue;
+        }
+        QWidget* widget = item->widget();
+        if (widget) {
+            disconnect(widget, nullptr, this, nullptr);
+            delete widget;
+        }
+        delete item;
     }
     characterButtons.clear();
 
@@ -276,3 +285,7 @@ void CharacterSelectionWidget::updateButtonStates() {
         button->setEnabled(availableCharacters.contains(character));
     }
 }
+
+#if __has_include("moc_CharacterSelectionWidget.cpp")
+#include "moc_CharacterSelectionWidget.cpp"
+#endif

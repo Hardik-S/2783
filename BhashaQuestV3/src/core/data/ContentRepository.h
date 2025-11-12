@@ -2,6 +2,7 @@
 #define CONTENTREPOSITORY_H
 
 #include <QString>
+#include <QStringList>
 #include <QList>
 #include <QMap>
 #include <QJsonObject>
@@ -29,6 +30,7 @@ private:
         QString id;
         QString name;
         QString language;
+        QStringList characterSet;
         QList<Exercise*> exercises;
     };
 
@@ -50,6 +52,7 @@ public:
     int getTotalExerciseCount() const;
     ExerciseSequencePtr createSequenceForSkill(const QString& skillId) const;
     ExerciseSequencePtr createSequenceForReview(const QList<QString>& exerciseIds) const;
+    QStringList getSkillCharacterSet(const QString& skillId) const;
 
 private:
     Exercise* findExerciseById(const QString& exerciseId) const;

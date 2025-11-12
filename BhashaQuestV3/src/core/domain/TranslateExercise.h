@@ -16,6 +16,8 @@ private:
     QString englishPhrase;              // Phrase to translate
     QStringList correctAnswers;         // Multiple valid answers (native + romanization)
     QString targetLanguage;             // Target language name
+    QStringList characterSet;           // Available characters for script entry
+    bool characterSelectionEnabled;     // Flag to show character picker
 
 public:
     TranslateExercise();
@@ -37,6 +39,10 @@ public:
     void setCorrectAnswers(const QStringList& answers) { correctAnswers = answers; }
     void setTargetLanguage(const QString& language) { targetLanguage = language; }
     void setPrompt(const QString& newPrompt) { prompt = newPrompt; }
+    void setCharacterSet(const QStringList& characters);
+    QStringList getCharacterSet() const { return characterSet; }
+    void enableCharacterSelection(bool enabled);
+    bool usesCharacterSelection() const { return characterSelectionEnabled; }
 };
 
 #endif // TRANSLATEEXERCISE_H

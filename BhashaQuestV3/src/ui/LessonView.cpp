@@ -1,4 +1,5 @@
 #include "LessonView.h"
+#include "widgets/CharacterSelectionWidget.h"
 #include "../core/domain/MCQExercise.h"
 #include "../core/domain/TranslateExercise.h"
 #include "../core/domain/TileOrderExercise.h"
@@ -17,9 +18,10 @@ LessonView::LessonView(QWidget* parent)
     : QWidget(parent)
     , mcqButtonGroup(nullptr)
     , translateInput(nullptr)
+    , characterSelectionWidget(nullptr)
     , tileListWidget(nullptr)
-    , currentExercise(nullptr)
     , nextLessonButton(nullptr)
+    , currentExercise(nullptr)
 {
     setupUI();
 }
@@ -605,10 +607,11 @@ void LessonView::clearInputWidgets() {
     while ((item = inputLayout->takeAt(0)) != nullptr) {
         QWidget* widget = item->widget();
         if (widget && widget != nextLessonButton) {
-            delete widget;
+        delete widget;
         }
         delete item;
     }
+    characterSelectionWidget = nullptr;
 }
 
 void LessonView::createMCQWidgets(Exercise* exercise) {
@@ -656,7 +659,29 @@ void LessonView::createMCQWidgets(Exercise* exercise) {
 }
 
 void LessonView::createTranslateWidgets(Exercise* exercise) {
-    (void)exercise;  // Parameter reserved for future use
+    TranslateExercise* translateExercise = dynamic_cast<TranslateExercise*>(exercise);
+    if (!translateExercise) {
+        promptLabel->setText("Error: Invalid Translate exercise");
+        return;
+    }
+
+    if (translateExercise->usesCharacterSelection() && !translateExercise->getCharacterSet().isEmpty()) {
+        QLabel* instructionLabel = new QLabel(
+            QString("Tap the characters in order to build the answer in %1:").arg(
+                translateExercise->getTargetLanguage()), inputContainer);
+        instructionLabel->setStyleSheet(
+            "QLabel { color: #444; font-size: 12px; margin-bottom: 8px; }");
+        inputLayout->addWidget(instructionLabel);
+
+        characterSelectionWidget = new CharacterSelectionWidget(
+            translateExercise->getCorrectAnswer(),
+            translateExercise->getCharacterSet(),
+            translateExercise->getTargetLanguage(),
+            inputContainer);
+        inputLayout->addWidget(characterSelectionWidget);
+        return;
+    }
+
     translateInput = new QLineEdit(inputContainer);
     QFont inputFont;
     inputFont.setPointSize(14);
@@ -755,6 +780,9 @@ QString LessonView::collectAnswer() const {
         }
     }
     else if (type == "Translate") {
+        if (characterSelectionWidget) {
+            return characterSelectionWidget->getSelectedSequence();
+        }
         if (translateInput) {
             return translateInput->text().trimmed();
         }

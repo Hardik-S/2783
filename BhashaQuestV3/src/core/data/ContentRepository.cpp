@@ -1,5 +1,6 @@
 #include "ContentRepository.h"
 #include "../domain/ExerciseFactory.h"
+#include "../domain/TranslateExercise.h"
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -126,6 +127,13 @@ QString ContentRepository::getSkillLanguage(const QString& skillId) const {
     return skills[skillId].language;
 }
 
+QStringList ContentRepository::getSkillCharacterSet(const QString& skillId) const {
+    if (!skills.contains(skillId)) {
+        return QStringList();
+    }
+    return skills[skillId].characterSet;
+}
+
 bool ContentRepository::isLoaded() const {
     return contentLoaded;
 }
@@ -162,6 +170,12 @@ ContentRepository::Skill ContentRepository::parseSkill(const QJsonObject& skillJ
     skill.id = skillJson["id"].toString();
     skill.name = skillJson["name"].toString();
     skill.language = skillJson["language"].toString();
+    if (skillJson.contains("characterSet") && skillJson["characterSet"].isArray()) {
+        QJsonArray characters = skillJson["characterSet"].toArray();
+        for (const QJsonValue& value : characters) {
+            skill.characterSet.append(value.toString());
+        }
+    }
 
     // Validate required fields
     if (skill.id.isEmpty()) {
@@ -202,6 +216,11 @@ ContentRepository::Skill ContentRepository::parseSkill(const QJsonObject& skillJ
             skill.exercises.append(exercise);
             qDebug() << "ContentRepository: Created" << type << "exercise"
                      << exercise->getId() << "for skill" << skill.id;
+            TranslateExercise* translateExercise = dynamic_cast<TranslateExercise*>(exercise);
+            if (translateExercise && !skill.characterSet.isEmpty()) {
+                translateExercise->setCharacterSet(skill.characterSet);
+                translateExercise->enableCharacterSelection(true);
+            }
         } else {
             qWarning() << "ContentRepository: Failed to create" << type
                        << "exercise in skill" << skill.id;

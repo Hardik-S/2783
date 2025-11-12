@@ -29,24 +29,24 @@ Bhasha Quest is a Duolingo-inspired language learning application featuring mult
 ### Prerequisites
 
 - Qt6 (Core, Widgets, Multimedia modules)
-- CMake 3.16 or higher
-- C++17 compatible compiler
+- qmake (bundled with Qt)
+- C++17 compatible compiler (MinGW, Clang, or MSVC)
 
-### Building with CMake
+### Building with qmake (recommended)
 
 ```bash
-cd code
-mkdir build && cd build
-cmake ..
-make
+qmake BhashaQuestV3.pro
+make          # or mingw32-make on Windows if you are not in Qt Creator
 ./BhashaQuest
 ```
 
 ### Building with Qt Creator
 
-1. Open `code/CMakeLists.txt` as a project in Qt Creator
-2. Configure with a Qt6 kit
-3. Build and run (Ctrl+R or Cmd+R)
+1. Open `BhashaQuestV3.pro` in Qt Creator
+2. Configure a Qt6 kit that matches your toolchain
+3. Build & run (Ctrl+R / ⌘R)
+
+> **Note:** Qt Creator can still load `CMakeLists.txt`, but the qmake project is the maintained workflow—other build files may be stale.
 
 ## Architecture
 

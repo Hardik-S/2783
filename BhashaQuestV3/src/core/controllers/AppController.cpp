@@ -1,7 +1,9 @@
 #include "AppController.h"
 #include "../domain/MCQGrader.h"
 #include "../domain/TranslateGrader.h"
+#include "../domain/TranslateExercise.h"
 #include "../domain/TileOrderGrader.h"
+#include "../domain/CharacterSelectionGrader.h"
 #include <QDate>
 #include <QDebug>
 
@@ -273,6 +275,10 @@ StrategyGrader* AppController::createGraderForExercise(Exercise* exercise) {
     if (type == "MCQ") {
         return new MCQGrader();
     } else if (type == "Translate") {
+        TranslateExercise* translateExercise = dynamic_cast<TranslateExercise*>(exercise);
+        if (translateExercise && translateExercise->usesCharacterSelection()) {
+            return new CharacterSelectionGrader();
+        }
         return new TranslateGrader();
     } else if (type == "TileOrder") {
         return new TileOrderGrader();
