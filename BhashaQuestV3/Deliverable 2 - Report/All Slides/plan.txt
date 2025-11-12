@@ -1,0 +1,17 @@
+Feed slides to Gemini cli for rename and agents.md creation. 
+Feed slides to notebook for detailed breakdown of changes from phase 1 to 2. 
+Feed breakdown to grok and evaluate if report sufficiently elaborates on changes and applies new patterns 
+Feed evaluation to gpt5t for rewrite brainstorm 
+Use Gemini cli for any small fixes or changes 
+Use codex to rewrite given all of the above 
+Use sonnet to generate puml 
+Use Gemini pro to compile and polish 
+Use latex and overleaf with image insertion 
+
+Review and manually edit as required 
+Stop and take a break 
+
+
+Practice recording by recording 
+Spend max 15m on editing 
+Submit. 

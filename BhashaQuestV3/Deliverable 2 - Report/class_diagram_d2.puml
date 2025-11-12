@@ -1,0 +1,396 @@
+@startuml BhashaQuestD2_ClassDiagram
+
+!define ACCENT_BLUE #2196F3
+!define ACCENT_GREEN #4CAF50
+!define ACCENT_PURPLE #9C27B0
+!define ACCENT_ORANGE #FF9800
+
+skinparam backgroundColor #FAFAFA
+skinparam classBackgroundColor White
+skinparam classBorderColor #333333
+skinparam classAttributeIconSize 0
+skinparam arrowThickness 2
+
+' ============================================================================
+' ENUMS & DATA STRUCTURES (Define first)
+' ============================================================================
+
+package "Core Types" #F5F5F5 {
+    
+    enum Difficulty {
+        Hard = 1
+        Medium = 2
+        Easy = 3
+    }
+    
+    class Result {
+        correct: bool
+        score: int
+        feedback: QString
+    }
+    
+    class ReviewData {
+        exerciseId: QString
+        lastReviewDate: QDate
+        nextReviewDate: QDate
+        interval: int
+        difficulty: Difficulty
+        reviewCount: int
+    }
+    
+    class Skill {
+        id: QString
+        name: QString
+        language: QString
+        exercises: QList<Exercise>
+    }
+}
+
+' ============================================================================
+' PRESENTATION LAYER (UI)
+' ============================================================================
+
+package "UI Layer" #E3F2FD {
+    
+    class HomeView {
+        + onStartLearningClicked(): void
+        + onViewProfileClicked(): void
+        --
+        ~ signals:
+        startLearningRequested()
+        viewProfileRequested()
+    }
+    
+    class LessonView {
+        - currentExercise: Exercise
+        - mcqButtonGroup: QButtonGroup
+        - translateInput: QLineEdit
+        - tileListWidget: QListWidget
+        --
+        + updateExercise(Exercise): void
+        + displayFeedback(Result): void
+        + updateProgress(int, int): void
+        + collectAnswer(): QString
+        --
+        ~ signals:
+        answerSubmitted(QString)
+        nextExerciseRequested()
+    }
+    
+    class ProfileView {
+        - currentProfile: Profile
+        --
+        + updateProfile(Profile): void
+        + updateStats(int, int): void
+        + refreshSkillsList(): void
+    }
+    
+    class CharacterSelectionWidget {
+        - characterBank: QStringList
+        - selectedSequence: QStringList
+        - availableCharacters: QStringList
+        --
+        + getSelectedSequence(): QString
+        + reset(): void
+        --
+        ~ signals:
+        characterSelected()
+    }
+}
+
+' ============================================================================
+' CONTROLLER LAYER
+' ============================================================================
+
+package "Controller Layer" #FFF3E0 {
+    
+    class AppController {
+        - currentExercise: Exercise
+        - exerciseQueue: QList<Exercise>
+        - userProfile: Profile
+        - srsScheduler: SRSScheduler
+        - currentGrader: StrategyGrader
+        - sessionXP: int
+        --
+        + startLesson(QString, QList<Exercise>): void
+        + loadNextExercise(): bool
+        + submitAnswer(QString): void
+        + updateProfile(Result): void
+        - createGraderForExercise(Exercise): StrategyGrader
+        - calculateXP(Result): int
+        --
+        ~ signals:
+        exerciseChanged(Exercise)
+        answerGraded(Result)
+        profileUpdated(int, int)
+        progressUpdated(int, int)
+    }
+}
+
+' ============================================================================
+' DOMAIN LAYER
+' ============================================================================
+
+package "Domain Layer" #F3E5F5 {
+    
+    ' ---- ABSTRACT EXERCISE BASE CLASS ----
+    
+    abstract class Exercise {
+        #id: QString
+        #type: QString
+        #prompt: QString
+        #difficulty: int
+        --
+        {abstract} + getPrompt(): QString
+        {abstract} + getCorrectAnswer(): QString
+        {abstract} + getType(): QString
+        {abstract} + renderUI(QWidget): QWidget
+    }
+    
+    ' ---- CONCRETE EXERCISE TYPES ----
+    
+    class MCQExercise {
+        - options: QStringList
+        - correctIndex: int
+        --
+        + getOptions(): QStringList
+        + getCorrectIndex(): int
+    }
+    
+    class TranslateExercise {
+        - englishPhrase: QString
+        - correctAnswers: QStringList
+        - targetLanguage: QString
+        --
+        + getCorrectAnswers(): QStringList
+        + getTargetLanguage(): QString
+    }
+    
+    class TileOrderExercise {
+        - tiles: QStringList
+        - correctOrder: QStringList
+        --
+        + getTiles(): QStringList
+        + getCorrectOrder(): QStringList
+        + shuffle(): void
+    }
+    
+    ' ---- FACTORY PATTERN ----
+    
+    class ExerciseFactory <<Factory>> {
+        {static} + createExercise(QString, QJsonObject): Exercise
+        {static} - createMCQ(QJsonObject): Exercise
+        {static} - createTranslate(QJsonObject): Exercise
+        {static} - createTileOrder(QJsonObject): Exercise
+    }
+    
+    ' ---- STRATEGY PATTERN ----
+    
+    abstract class StrategyGrader {
+        {abstract} + grade(QString, Exercise): Result
+    }
+    
+    class MCQGrader {
+        + grade(QString, Exercise): Result
+    }
+    
+    class TranslateGrader {
+        - fuzzyMatch(QString, QStringList): bool
+        - levenshteinDistance(QString, QString): int
+        + grade(QString, Exercise): Result
+    }
+    
+    class TileOrderGrader {
+        + grade(QString, Exercise): Result
+    }
+    
+    class CharacterSelectionGrader <<NEW>> {
+        - parseCharacterSequence(QString): QString
+        + grade(QString, Exercise): Result
+    }
+    
+    ' ---- SINGLETON PATTERN ----
+    
+    class AudioManager <<Singleton>> {
+        {static} instance: AudioManager
+        - player: QMediaPlayer
+        --
+        {static} + getInstance(): AudioManager
+        + playSuccess(): void
+        + playError(): void
+        + playAudio(QString): void
+    }
+    
+    ' ---- SRS MANAGEMENT ----
+    
+    class SRSScheduler {
+        - reviewSchedule: QMap<QString, ReviewData>
+        --
+        + scheduleNextReview(QString, Difficulty): void
+        + isDueForReview(QString): bool
+        + getReviewQueue(): QList<QString>
+        + recordCompletion(QString): void
+    }
+    
+    ' ---- PROFILE & PROGRESSION ----
+    
+    class Profile {
+        - username: QString
+        - currentXP: int
+        - streak: int
+        - skillProgress: QMap<QString, SkillProgress>
+        - simulatedCurrentDate: QDate
+        --
+        + addXP(int): void
+        + updateStreak(): void
+        + getProgress(QString): SkillProgress
+        + advanceSimulatedDate(int): void
+        + getCurrentDate(): QDate
+    }
+    
+    class SkillProgress {
+        - skillId: QString
+        - masteryLevel: int
+        - exercisesCompleted: int
+        - correctAnswers: int
+        - incorrectAnswers: int
+        --
+        + recordResult(bool): void
+        + incrementMastery(int): void
+        + getAccuracy(): double
+    }
+    
+    ' ---- UTILITY CLASS ----
+    
+    class CharacterUtils <<Utility, NEW>> {
+        {static} + generateCharacterBank(QString, QStringList): QStringList
+        {static} + extractUniqueCharacters(QString): QStringList
+        {static} + getRandomDistractors(QString, QStringList, int): QStringList
+    }
+}
+
+' ============================================================================
+' DATA LAYER
+' ============================================================================
+
+package "Data Layer" #F1F8E9 {
+    
+    class ContentRepository {
+        - skills: QMap<QString, Skill>
+        - contentLoaded: bool
+        --
+        + loadContent(): bool
+        + getExercisesForSkill(QString): QList<Exercise>
+        + getAvailableSkills(): QList<QString>
+        + isLoaded(): bool
+    }
+}
+
+' ============================================================================
+' RELATIONSHIPS - Inheritance
+' ============================================================================
+
+Exercise <|-- MCQExercise
+Exercise <|-- TranslateExercise
+Exercise <|-- TileOrderExercise
+
+StrategyGrader <|-- MCQGrader
+StrategyGrader <|-- TranslateGrader
+StrategyGrader <|-- TileOrderGrader
+StrategyGrader <|-- CharacterSelectionGrader
+
+' ============================================================================
+' RELATIONSHIPS - Composition & Aggregation
+' ============================================================================
+
+Profile *-- SkillProgress
+SRSScheduler o-- ReviewData
+Profile *-- Skill
+
+' ============================================================================
+' RELATIONSHIPS - Creation & Usage
+' ============================================================================
+
+ExerciseFactory ..> Exercise : creates
+ExerciseFactory ..> MCQExercise
+ExerciseFactory ..> TranslateExercise
+ExerciseFactory ..> TileOrderExercise
+
+AppController --> Exercise : manages
+AppController --> StrategyGrader : creates
+AppController --> Profile : updates
+AppController --> SRSScheduler : uses
+
+LessonView --> AppController : communicates
+ProfileView --> AppController : observes
+HomeView --> AppController : triggers
+
+ContentRepository --> Exercise : loads
+ContentRepository --> Skill : contains
+ContentRepository ..> ExerciseFactory : delegates
+
+LessonView --> CharacterSelectionWidget : creates
+CharacterSelectionWidget --> CharacterUtils : uses
+CharacterSelectionWidget --> Result : produces
+
+TranslateGrader --> Result : produces
+MCQGrader --> Result : produces
+TileOrderGrader --> Result : produces
+CharacterSelectionGrader --> Result : produces
+
+AudioManager --> QMediaPlayer : owns
+
+' ============================================================================
+' ANNOTATIONS
+' ============================================================================
+
+note right of ExerciseFactory
+  **PATTERN: Factory Method**
+  Encapsulates exercise creation
+  Enables easy extension of types
+  Decouples instantiation from usage
+end note
+
+note right of StrategyGrader
+  **PATTERN: Strategy**
+  Pluggable grading algorithms
+  Runtime algorithm selection
+  Enables Open-Closed Principle
+end note
+
+note right of AudioManager
+  **PATTERN: Singleton**
+  Single audio resource manager
+  Prevents multiple player conflicts
+  Global access via getInstance()
+end note
+
+note right of CharacterSelectionWidget
+  **NEW in D2**
+  Solves Indic script input challenges
+  Generates character bank (n+3)
+  Drag-select interaction pattern
+end note
+
+note right of CharacterUtils
+  **NEW in D2**
+  Supports character selection exercises
+  Extracts & shuffles characters
+  Generates distractor sets
+end note
+
+note right of CharacterSelectionGrader
+  **NEW in D2**
+  Grading for character selection mode
+  Sequence matching (n+3 bank)
+  Reduces typo issues
+end note
+
+note right of Profile
+  **D2 Enhancement: Time Travel**
+  advanceSimulatedDate() for testing
+  Testing streak feature
+  QA and demo support
+end note
+
+@enduml

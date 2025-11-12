@@ -1,0 +1,135 @@
+@startuml BhashaQuestD2_UpdatedSequence
+!theme plain
+title Bhasha Quest - Updated "Complete Exercise" Sequence (D2)
+' AppController highlighted as orchestrator
+
+actor User
+participant LessonView as "LessonView\n(Qt Widget)"
+participant AppController as "**AppController**\n(Orchestrator)"
+participant CharacterSelectionWidget as "CharacterSelectionWidget\n(Qt Widget)"
+participant LessonEngine
+participant ExerciseFactory
+participant Exercise as "Exercise\n(TranslateExercise)"
+participant StrategyGrader
+participant SRSScheduler
+participant AudioManager
+participant Profile
+
+autonumber
+== User initiates answer submission ==
+User ->> LessonView: Submits answer
+activate LessonView
+
+alt Translate Exercise with Script Mode
+    LessonView -->> CharacterSelectionWidget: <i>[Qt Signal]</i>\nrenderCharacterPicker()
+    activate CharacterSelectionWidget
+    CharacterSelectionWidget ->> CharacterSelectionWidget: Display script input helper
+    User ->> CharacterSelectionWidget: Selects characters
+    CharacterSelectionWidget -->> LessonView: <i>[Qt Signal]</i>\ncharacterSelected(QString)
+    deactivate CharacterSelectionWidget
+end
+
+LessonView ->> AppController: submitAnswer(answer)
+activate AppController
+note right of AppController
+  **Orchestrator Pattern**
+  AppController coordinates all layers
+  and delegates to appropriate handlers
+end note
+
+== Core Processing ==
+AppController ->> LessonEngine: processAnswer(exercise, answer)
+activate LessonEngine
+
+LessonEngine ->> Exercise: getCorrectAnswer()
+activate Exercise
+Exercise -->> LessonEngine: correctAnswer
+deactivate Exercise
+
+LessonEngine ->> StrategyGrader: evaluate(exercise, answer)
+activate StrategyGrader
+StrategyGrader ->> StrategyGrader: compareAnswers()
+StrategyGrader -->> LessonEngine: Result(isCorrect, score)
+deactivate StrategyGrader
+
+== Result Processing ==
+LessonEngine ->> SRSScheduler: updateSchedule(exerciseId, result)
+activate SRSScheduler
+SRSScheduler ->> SRSScheduler: calculateNextReview()
+SRSScheduler -->> LessonEngine: nextReviewInterval
+deactivate SRSScheduler
+
+LessonEngine ->> Profile: updateProgress(skillId, result)
+activate Profile
+Profile ->> Profile: incrementMastery()
+Profile -->> LessonEngine: updated
+deactivate Profile
+
+alt If Correct Answer
+    LessonEngine ->> AudioManager: playSound("success.wav")
+    activate AudioManager
+    AudioManager -->> LessonEngine: <i>[Qt Signal]</i>\nsoundFinished()
+    deactivate AudioManager
+else If Incorrect Answer
+    LessonEngine ->> AudioManager: playSound("incorrect.wav")
+    activate AudioManager
+    AudioManager -->> LessonEngine: <i>[Qt Signal]</i>\nsoundFinished()
+    deactivate AudioManager
+end
+
+LessonEngine -->> AppController: Result { isCorrect, xp, feedback }
+deactivate LessonEngine
+
+== UI Update via Signals ==
+AppController -->> LessonView: <i>[Qt Signal]</i>\nexerciseCompleted(Result)
+deactivate AppController
+activate LessonView
+
+LessonView ->> LessonView: displayFeedback(result)
+LessonView ->> LessonView: animateXPGain(xp)
+LessonView -->> User: Show feedback toast + XP earned
+deactivate LessonView
+
+== Ready for Next Exercise ==
+User ->> LessonView: Continue / Next Exercise
+LessonView ->> AppController: requestNextExercise()
+activate AppController
+
+AppController ->> LessonEngine: getNextExercise()
+activate LessonEngine
+
+LessonEngine ->> SRSScheduler: getNextDueExercise()
+activate SRSScheduler
+SRSScheduler -->> LessonEngine: ExerciseSpec
+deactivate SRSScheduler
+
+LessonEngine ->> ExerciseFactory: createExercise(spec)
+activate ExerciseFactory
+ExerciseFactory ->> ExerciseFactory: instantiate type
+ExerciseFactory -->> LessonEngine: Exercise instance
+deactivate ExerciseFactory
+
+LessonEngine -->> AppController: Exercise
+deactivate LessonEngine
+
+AppController -->> LessonView: <i>[Qt Signal]</i>\nnextExerciseReady(Exercise)
+deactivate AppController
+activate LessonView
+
+LessonView ->> Exercise: getUIModel()
+activate Exercise
+Exercise -->> LessonView: UIModel { prompt, options, ...}
+deactivate Exercise
+
+LessonView ->> LessonView: renderExercise(model)
+LessonView -->> User: Display next exercise
+deactivate LessonView
+
+note over AppController, SRSScheduler
+  Legend:
+  — Synchronous method call
+  --> Asynchronous Qt Signal/Slot
+  ** Bold = Orchestrator/Central Hub
+end note
+
+@enduml
