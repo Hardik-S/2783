@@ -603,7 +603,10 @@ void LessonView::clearInputWidgets() {
 
     QLayoutItem* item;
     while ((item = inputLayout->takeAt(0)) != nullptr) {
-        delete item->widget();
+        QWidget* widget = item->widget();
+        if (widget && widget != nextLessonButton) {
+            delete widget;
+        }
         delete item;
     }
 }
