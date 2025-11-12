@@ -209,31 +209,37 @@ QWidget* ProfileView::createStatCard(const QString& icon, const QString& label, 
                                      const QString& accent) {
     QFrame* card = new QFrame(this);
     card->setStyleSheet(
-        QString("QFrame { background-color: white; border: 2px solid %1; border-radius: 12px; padding: 10px; }")
+        QString("QFrame { background-color: white; border: 2px solid %1; border-radius: 12px; padding: 6px 12px; }")
         .arg(accent)
     );
 
-    QVBoxLayout* layout = new QVBoxLayout(card);
-    layout->setSpacing(4);
-    layout->setContentsMargins(0, 0, 0, 0);
+    QHBoxLayout* layout = new QHBoxLayout(card);
+    layout->setSpacing(10);
+    layout->setContentsMargins(4, 4, 4, 4);
 
     QLabel* iconLabel = new QLabel(icon, card);
+    iconLabel->setFixedWidth(32);
     iconLabel->setAlignment(Qt::AlignCenter);
     layout->addWidget(iconLabel);
 
+    QVBoxLayout* textLayout = new QVBoxLayout();
+    textLayout->setSpacing(1);
+    textLayout->setContentsMargins(0, 0, 0, 0);
+
     QLabel* titleLabel = new QLabel(label, card);
-    titleLabel->setAlignment(Qt::AlignCenter);
-    titleLabel->setStyleSheet("color: #777777; font-size: 11px;");
-    layout->addWidget(titleLabel);
+    titleLabel->setStyleSheet("color: #777777; font-size: 12px;");
+    textLayout->addWidget(titleLabel);
 
     QLabel* valueLabel = new QLabel(value, card);
     valueLabel->setObjectName("valueLabel");
-    valueLabel->setAlignment(Qt::AlignCenter);
     QFont valueFont;
-    valueFont.setPointSize(18);
+    valueFont.setPointSize(16);
     valueFont.setBold(true);
     valueLabel->setFont(valueFont);
-    layout->addWidget(valueLabel);
+    textLayout->addWidget(valueLabel);
+
+    layout->addLayout(textLayout);
+    layout->addStretch();
 
     return card;
 }
