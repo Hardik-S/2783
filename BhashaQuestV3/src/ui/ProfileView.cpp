@@ -1,17 +1,14 @@
 #include "ProfileView.h"
 #include <QFrame>
 #include <QFont>
-#include <QPalette>
-#include <QGraphicsDropShadowEffect>
 #include <QMessageBox>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-#include <QGridLayout>
+#include <QScrollArea>
+#include <QProgressBar>
+#include <QPushButton>
+#include <QStringList>
 
-/**
- * ProfileView Implementation - ENHANCED VERSION
- * With improved UI design, animations, and better data visualization
- */
 
 ProfileView::ProfileView(QWidget* parent)
     : QWidget(parent)
@@ -20,246 +17,222 @@ ProfileView::ProfileView(QWidget* parent)
     setupUI();
 }
 
-ProfileView::~ProfileView() {
-    // Qt parent-child ownership handles widget cleanup
-}
+ProfileView::~ProfileView() { }
 
 void ProfileView::setupUI() {
-    // Set background gradient
-    setStyleSheet("QWidget { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }");
-    
-    // Create main layout
+    setStyleSheet("QWidget { background-color: #5ec48c; }");
+
     mainLayout = new QVBoxLayout(this);
-    mainLayout->setSpacing(15);
+    mainLayout->setSpacing(12);
     mainLayout->setContentsMargins(20, 20, 20, 20);
 
-    // Title with modern styling
     QLabel* titleLabel = new QLabel("Your Learning Journey", this);
     QFont titleFont;
-    titleFont.setPointSize(24);
+    titleFont.setPointSize(22);
     titleFont.setBold(true);
     titleLabel->setFont(titleFont);
-    titleLabel->setAlignment(Qt::AlignCenter);
-    titleLabel->setStyleSheet("QLabel { color: white; margin-bottom: 10px; }");
+    titleLabel->setStyleSheet("color: white;");
     mainLayout->addWidget(titleLabel);
 
-    // Profile card
-    QWidget* profileCard = new QWidget(this);
-    profileCard->setStyleSheet(
-        "QWidget { "
-        "   background-color: white; "
-        "   border-radius: 20px; "
-        "   padding: 15px; "
-        "}"
+    QFrame* focusFrame = new QFrame(this);
+    focusFrame->setStyleSheet(
+        "QFrame { background-color: rgba(255, 255, 255, 0.18); border-radius: 12px; }"
     );
-    
-    // Add shadow effect
-    QGraphicsDropShadowEffect* shadowEffect = new QGraphicsDropShadowEffect(this);
-    shadowEffect->setBlurRadius(20);
-    shadowEffect->setXOffset(0);
-    shadowEffect->setYOffset(5);
-    shadowEffect->setColor(QColor(0, 0, 0, 40));
-    profileCard->setGraphicsEffect(shadowEffect);
-    
-    QVBoxLayout* profileLayout = new QVBoxLayout(profileCard);
+    QVBoxLayout* focusLayout = new QVBoxLayout(focusFrame);
+    focusLayout->setSpacing(4);
+    focusLayout->setContentsMargins(12, 12, 12, 12);
 
-    // Avatar placeholder
+    skillSelectionLabel = new QLabel("Select Skill", focusFrame);
+    skillSelectionLabel->setStyleSheet("color: white; font-weight: bold;");
+    selectedLanguageLabel = new QLabel("Selected Language: Nepali", focusFrame);
+    selectedLanguageLabel->setStyleSheet("color: white;");
+    topFocusLabel = new QLabel("Top Focus: Nepali Numbers", focusFrame);
+    topFocusLabel->setStyleSheet("color: white;");
+
+    focusLayout->addWidget(skillSelectionLabel);
+    focusLayout->addWidget(selectedLanguageLabel);
+    focusLayout->addWidget(topFocusLabel);
+    mainLayout->addWidget(focusFrame);
+
+    QFrame* profileCard = new QFrame(this);
+    profileCard->setStyleSheet("QFrame { background-color: white; border-radius: 16px; padding: 18px; }");
+    QVBoxLayout* profileLayout = new QVBoxLayout(profileCard);
+    profileLayout->setSpacing(8);
+    profileLayout->setContentsMargins(0, 0, 0, 0);
+
     QLabel* avatarLabel = new QLabel("👤", profileCard);
     avatarLabel->setAlignment(Qt::AlignCenter);
-    avatarLabel->setStyleSheet(
-        "QLabel { "
-        "   background-color: #E3F2FD; "
-        "   border-radius: 50px; "
-        "   padding: 15px; "
-        "   font-size: 35px; "
-        "   max-width: 80px; "
-        "   max-height: 80px; "
-        "}"
-    );
+    avatarLabel->setStyleSheet("font-size: 32px;");
     profileLayout->addWidget(avatarLabel, 0, Qt::AlignCenter);
 
-    // Username
-    usernameLabel = new QLabel("Language Learner", profileCard);
-    QFont usernameFont;
-    usernameFont.setPointSize(18);
-    usernameFont.setBold(true);
-    usernameLabel->setFont(usernameFont);
+    usernameLabel = new QLabel("Player", profileCard);
+    QFont nameFont;
+    nameFont.setPointSize(18);
+    nameFont.setBold(true);
+    usernameLabel->setFont(nameFont);
     usernameLabel->setAlignment(Qt::AlignCenter);
-    usernameLabel->setStyleSheet("QLabel { color: #333; margin: 15px 0; }");
     profileLayout->addWidget(usernameLabel);
+
+    QLabel* taglineLabel = new QLabel(
+        "Tracking streaks, XP, and the languages you care about.",
+        profileCard
+    );
+    taglineLabel->setWordWrap(true);
+    taglineLabel->setAlignment(Qt::AlignCenter);
+    taglineLabel->setStyleSheet("color: #555555; font-size: 13px;");
+    profileLayout->addWidget(taglineLabel);
 
     mainLayout->addWidget(profileCard);
 
-    // Stats cards container
-    QHBoxLayout* statsContainer = new QHBoxLayout();
-    statsContainer->setSpacing(20);
+    QHBoxLayout* statsLayout = new QHBoxLayout();
+    statsLayout->setSpacing(10);
 
-    // XP Card
-    QWidget* xpCard = createStatCard("⭐", "Total XP", "0", "#4CAF50");
+    QWidget* xpCard = createStatCard("⭐", "Total XP", "0", "#1eb85d");
     xpLabel = xpCard->findChild<QLabel*>("valueLabel");
-    statsContainer->addWidget(xpCard);
+    statsLayout->addWidget(xpCard);
 
-    // Streak Card  
-    QWidget* streakCard = createStatCard("🔥", "Streak", "0 days", "#FF9800");
+    QWidget* streakCard = createStatCard("🔥", "Streak", "0 days", "#ff9800");
     streakLabel = streakCard->findChild<QLabel*>("valueLabel");
-    statsContainer->addWidget(streakCard);
+    statsLayout->addWidget(streakCard);
 
-    // Level Card
-    QWidget* levelCard = createStatCard("🏆", "Level", "1", "#9C27B0");
+    QWidget* levelCard = createStatCard("🏆", "Level", "1", "#9c27b0");
     levelLabel = levelCard->findChild<QLabel*>("valueLabel");
-    statsContainer->addWidget(levelCard);
+    statsLayout->addWidget(levelCard);
 
-    mainLayout->addLayout(statsContainer);
+    mainLayout->addLayout(statsLayout);
 
-    // Skills section
+    QFrame* xpFrame = new QFrame(this);
+    xpFrame->setStyleSheet("QFrame { background-color: rgba(255, 255, 255, 0.2); border-radius: 12px; padding: 10px; }");
+    QHBoxLayout* xpLayout = new QHBoxLayout(xpFrame);
+    xpLayout->setSpacing(10);
+    xpLayout->setContentsMargins(8, 8, 8, 8);
+
+    xpNextLabel = new QLabel("100 XP to Level 2", xpFrame);
+    xpNextLabel->setStyleSheet("color: white;");
+
+    xpProgress = new QProgressBar(xpFrame);
+    xpProgress->setMinimum(0);
+    xpProgress->setMaximum(100);
+    xpProgress->setValue(0);
+    xpProgress->setTextVisible(false);
+    xpProgress->setStyleSheet(R"(
+QProgressBar { background-color: rgba(255, 255, 255, 0.35); border: none; border-radius: 8px; }
+QProgressBar::chunk { background-color: #23a455; border-radius: 8px; }
+)");
+
+    xpLayout->addWidget(xpNextLabel);
+    xpLayout->addWidget(xpProgress, 1);
+    mainLayout->addWidget(xpFrame);
+
+    QFrame* snapshotFrame = new QFrame(this);
+    snapshotFrame->setStyleSheet("QFrame { background-color: white; border-radius: 14px; padding: 16px; }");
+    QVBoxLayout* snapshotLayout = new QVBoxLayout(snapshotFrame);
+    snapshotLayout->setSpacing(8);
+    snapshotLayout->setContentsMargins(0, 0, 0, 0);
+
+    QLabel* snapshotTitle = new QLabel("Progress Snapshot", snapshotFrame);
+    snapshotTitle->setStyleSheet("color: #333333; font-weight: bold;");
+    snapshotLayout->addWidget(snapshotTitle);
+
+    masteryValueLabel = new QLabel("Average Mastery: 0%", snapshotFrame);
+    masteryValueLabel->setStyleSheet("color: #333333;");
+    snapshotLayout->addWidget(masteryValueLabel);
+
+    masteryBar = new QProgressBar(snapshotFrame);
+    masteryBar->setMinimum(0);
+    masteryBar->setMaximum(100);
+    masteryBar->setValue(0);
+    masteryBar->setTextVisible(false);
+    masteryBar->setStyleSheet(R"(
+QProgressBar { background-color: #f0f0f0; border-radius: 8px; height: 16px; }
+QProgressBar::chunk { background-color: #1ab47d; border-radius: 8px; }
+)");
+    snapshotLayout->addWidget(masteryBar);
+
+    accuracyValueLabel = new QLabel("Overall Accuracy: 0%", snapshotFrame);
+    accuracyValueLabel->setStyleSheet("color: #4a4a4a; font-size: 12px;");
+    snapshotLayout->addWidget(accuracyValueLabel);
+
+    completionValueLabel = new QLabel("Exercises Completed: 0 / 0", snapshotFrame);
+    completionValueLabel->setStyleSheet("color: #4a4a4a; font-size: 12px;");
+    snapshotLayout->addWidget(completionValueLabel);
+
+    mainLayout->addWidget(snapshotFrame);
+
     QLabel* skillsTitle = new QLabel("Skill Progress", this);
-    QFont skillsTitleFont;
-    skillsTitleFont.setPointSize(18);
-    skillsTitleFont.setBold(true);
-    skillsTitle->setFont(skillsTitleFont);
-    skillsTitle->setStyleSheet("QLabel { color: white; margin-top: 20px; }");
+    QFont skillsFont;
+    skillsFont.setPointSize(18);
+    skillsFont.setBold(true);
+    skillsTitle->setFont(skillsFont);
+    skillsTitle->setStyleSheet("color: white;");
     mainLayout->addWidget(skillsTitle);
 
-    // Skills container with scroll area
     QScrollArea* scrollArea = new QScrollArea(this);
     scrollArea->setWidgetResizable(true);
-    scrollArea->setStyleSheet(
-        "QScrollArea { "
-        "   background-color: transparent; "
-        "   border: none; "
-        "}"
-    );
-    
+    scrollArea->setStyleSheet("QScrollArea { border: none; background: transparent; }");
     QWidget* skillsContainer = new QWidget();
     skillsLayout = new QVBoxLayout(skillsContainer);
     skillsLayout->setSpacing(10);
     skillsLayout->setContentsMargins(0, 0, 0, 0);
     scrollArea->setWidget(skillsContainer);
-
     mainLayout->addWidget(scrollArea, 1);
 
-    // Developer Tools section (Time Travel)
-    QWidget* devToolsCard = new QWidget(this);
-    devToolsCard->setStyleSheet(
-        "QWidget { "
-        "   background-color: #FFF3E0; "
-        "   border-radius: 15px; "
-        "   padding: 15px; "
-        "   margin-top: 10px; "
-        "}"
-    );
-    QVBoxLayout* devLayout = new QVBoxLayout(devToolsCard);
-    devLayout->setSpacing(10);
+    QFrame* devFrame = new QFrame(this);
+    devFrame->setStyleSheet("QFrame { background-color: #ffb347; border-radius: 12px; }");
+    QHBoxLayout* devLayout = new QHBoxLayout(devFrame);
+    devLayout->setContentsMargins(12, 8, 12, 8);
 
-    QLabel* devLabel = new QLabel("🔧 Developer Tools", devToolsCard);
-    QFont devFont;
-    devFont.setPointSize(12);
-    devFont.setBold(true);
-    devLabel->setFont(devFont);
-    devLabel->setStyleSheet("QLabel { color: #E65100; }");
-    devLayout->addWidget(devLabel);
-
-    QPushButton* timeTravelBtn = new QPushButton("⏭️ Next Day (Test Streak)", devToolsCard);
-    timeTravelBtn->setMinimumHeight(40);
-    timeTravelBtn->setStyleSheet(
-        "QPushButton { "
-        "   background-color: #FF9800; "
-        "   color: white; "
-        "   border: none; "
-        "   border-radius: 10px; "
-        "   padding: 10px; "
-        "   font-size: 13px; "
-        "   font-weight: bold; "
-        "} "
-        "QPushButton:hover { "
-        "   background-color: #FB8C00; "
-        "} "
-        "QPushButton:pressed { "
-        "   background-color: #F57C00; "
-        "}"
-    );
+    QLabel* devLabel = new QLabel("Developer Tools", devFrame);
+    devLabel->setStyleSheet("color: #5c2f00; font-weight: bold;");
+    QPushButton* timeTravelBtn = new QPushButton("Next Day (Test Streak)", devFrame);
+    timeTravelBtn->setStyleSheet(R"(
+QPushButton { background-color: #ff8c00; color: white; border: none; border-radius: 10px; padding: 6px 14px; }
+QPushButton:hover { background-color: #ff9000; }
+)");
     connect(timeTravelBtn, &QPushButton::clicked, this, &ProfileView::onTimeTravelClicked);
+
+    devLayout->addWidget(devLabel);
+    devLayout->addStretch();
     devLayout->addWidget(timeTravelBtn);
+    mainLayout->addWidget(devFrame);
 
-    devToolsCard->setVisible(false);  // Hidden by default
+    footerLabel = new QLabel("🧭 Viewing your profile...", this);
+    footerLabel->setAlignment(Qt::AlignCenter);
+    footerLabel->setStyleSheet("color: rgba(255, 255, 255, 0.9); font-size: 11px;");
+    mainLayout->addWidget(footerLabel);
 
-    // Developer tools toggle button
-    QPushButton* devToggleBtn = new QPushButton("🔧", this);
-    devToggleBtn->setFixedSize(35, 35);
-    devToggleBtn->setToolTip("Toggle Developer Tools");
-    devToggleBtn->setStyleSheet(
-        "QPushButton { "
-        "   background-color: rgba(255, 255, 255, 0.3); "
-        "   color: white; "
-        "   border: none; "
-        "   border-radius: 17px; "
-        "   font-size: 16px; "
-        "   font-weight: bold; "
-        "} "
-        "QPushButton:hover { "
-        "   background-color: rgba(255, 255, 255, 0.5); "
-        "} "
-        "QPushButton:pressed { "
-        "   background-color: rgba(255, 255, 255, 0.7); "
-        "}"
-    );
-    connect(devToggleBtn, &QPushButton::clicked, this, [devToolsCard]() {
-        devToolsCard->setVisible(!devToolsCard->isVisible());
-    });
-
-    // Create a horizontal layout for the title and toggle button
-    QHBoxLayout* titleLayout = new QHBoxLayout();
-    titleLayout->addWidget(titleLabel);
-    titleLayout->addStretch();
-    titleLayout->addWidget(devToggleBtn);
-
-    // We need to replace the title widget in the main layout with this new layout
-    // First, remove the title widget
-    mainLayout->removeWidget(titleLabel);
-    mainLayout->insertLayout(0, titleLayout);
-
-    mainLayout->addWidget(devToolsCard);
-
-    setMinimumSize(800, 600);  // Prevent window from being too small
+    setMinimumSize(800, 640);
     setLayout(mainLayout);
 }
 
-QWidget* ProfileView::createStatCard(const QString& icon, const QString& label, const QString& value, const QString& color) {
-    QWidget* card = new QWidget(this);
-    card->setMinimumHeight(100);
+QWidget* ProfileView::createStatCard(const QString& icon, const QString& label, const QString& value,
+                                     const QString& accent) {
+    QFrame* card = new QFrame(this);
     card->setStyleSheet(
-        QString("QWidget { "
-        "   background-color: white; "
-        "   border-radius: 15px; "
-        "   padding: 20px; "
-        "   border: 3px solid %1; "
-        "}").arg(color)
+        QString("QFrame { background-color: white; border: 2px solid %1; border-radius: 12px; padding: 10px; }")
+        .arg(accent)
     );
 
     QVBoxLayout* layout = new QVBoxLayout(card);
-    layout->setSpacing(8);
+    layout->setSpacing(4);
+    layout->setContentsMargins(0, 0, 0, 0);
 
-    // Icon
     QLabel* iconLabel = new QLabel(icon, card);
     iconLabel->setAlignment(Qt::AlignCenter);
-    iconLabel->setStyleSheet(QString("QLabel { font-size: 24px; color: %1; }").arg(color));
     layout->addWidget(iconLabel);
 
-    // Label
     QLabel* titleLabel = new QLabel(label, card);
     titleLabel->setAlignment(Qt::AlignCenter);
-    titleLabel->setStyleSheet("QLabel { color: #666; font-size: 12px; }");
+    titleLabel->setStyleSheet("color: #777777; font-size: 11px;");
     layout->addWidget(titleLabel);
 
-    // Value
     QLabel* valueLabel = new QLabel(value, card);
     valueLabel->setObjectName("valueLabel");
     valueLabel->setAlignment(Qt::AlignCenter);
     QFont valueFont;
-    valueFont.setPointSize(20);
+    valueFont.setPointSize(18);
     valueFont.setBold(true);
     valueLabel->setFont(valueFont);
-    valueLabel->setStyleSheet(QString("QLabel { color: %1; }").arg(color));
     layout->addWidget(valueLabel);
 
     return card;
@@ -270,6 +243,7 @@ void ProfileView::updateProfile(Profile* profile) {
 
     currentProfile = profile;
     usernameLabel->setText(profile->getUsername());
+    selectedLanguageLabel->setText(QString("Selected Language: %1").arg(profile->getSelectedLanguage()));
     updateStats(profile->getCurrentXP(), profile->getStreak());
     refreshSkillsList();
 }
@@ -277,24 +251,40 @@ void ProfileView::updateProfile(Profile* profile) {
 void ProfileView::updateStats(int xp, int streak) {
     xpLabel->setText(QString::number(xp));
     streakLabel->setText(streak == 1 ? "1 day" : QString("%1 days").arg(streak));
-    
-    // Calculate level based on XP (100 XP per level)
+
     int level = (xp / 100) + 1;
     levelLabel->setText(QString::number(level));
+
+    int xpIntoLevel = xp - (level - 1) * 100;
+    xpIntoLevel = qBound(0, xpIntoLevel, 100);
+    int xpToNext = level * 100 - xp;
+    xpToNext = qMax(0, xpToNext);
+
+    xpNextLabel->setText(QString("%1 XP to Level %2").arg(xpToNext).arg(level + 1));
+    xpProgress->setValue(xpIntoLevel);
 }
 
 void ProfileView::reset() {
-    usernameLabel->setText("Language Learner");
+    usernameLabel->setText("Player");
     xpLabel->setText("0");
     streakLabel->setText("0 days");
     levelLabel->setText("1");
+    selectedLanguageLabel->setText("Selected Language: Nepali");
+    topFocusLabel->setText("Top Focus: Nepali Numbers");
+    xpNextLabel->setText("100 XP to Level 2");
+    xpProgress->setValue(0);
+    masteryValueLabel->setText("Average Mastery: 0%");
+    masteryBar->setValue(0);
+    accuracyValueLabel->setText("Overall Accuracy: 0%");
+    completionValueLabel->setText("Exercises Completed: 0 / 0");
+    footerLabel->setText("🧭 Viewing your profile...");
 
-    // Clear skills
     QLayoutItem* item;
     while ((item = skillsLayout->takeAt(0)) != nullptr) {
         delete item->widget();
         delete item;
     }
+
     currentProfile = nullptr;
 }
 
@@ -304,16 +294,10 @@ void ProfileView::onTimeTravelClicked() {
         return;
     }
 
-    // Advance date by 1 day
     currentProfile->advanceSimulatedDate(1);
-
-    // Check streak validity (will reset if more than 1 day passed without activity)
     currentProfile->checkStreakValidity();
-
-    // Refresh UI to show updated stats
     updateProfile(currentProfile);
 
-    // Show confirmation with current simulated date
     QString message = QString("⏭️ Advanced to: %1\n\n"
                              "Current Streak: %2 days\n"
                              "Total XP: %3\n\n"
@@ -328,7 +312,6 @@ void ProfileView::onTimeTravelClicked() {
 void ProfileView::refreshSkillsList() {
     if (!currentProfile) return;
 
-    // Clear existing items
     QLayoutItem* item;
     while ((item = skillsLayout->takeAt(0)) != nullptr) {
         delete item->widget();
@@ -338,154 +321,128 @@ void ProfileView::refreshSkillsList() {
     QMap<QString, SkillProgress*> allProgress = currentProfile->getAllProgress();
 
     if (allProgress.isEmpty()) {
-        QLabel* placeholderLabel = new QLabel("No skills started yet.\nComplete a lesson to begin your journey!", this);
-        placeholderLabel->setWordWrap(true);
-        placeholderLabel->setAlignment(Qt::AlignCenter);
-        placeholderLabel->setStyleSheet(
-            "QLabel { "
-            "   color: white; "
-            "   font-size: 14px; "
-            "   font-style: italic; "
-            "   padding: 30px; "
-            "   background-color: rgba(255, 255, 255, 0.1); "
-            "   border-radius: 10px; "
-            "}"
-        );
-        skillsLayout->addWidget(placeholderLabel);
+        QLabel* placeholder = new QLabel("No skills started yet. Complete a lesson to populate this list.", this);
+        placeholder->setWordWrap(true);
+        placeholder->setStyleSheet("color: white;");
+        skillsLayout->addWidget(placeholder);
+        topFocusLabel->setText("Top Focus: -");
+        masteryValueLabel->setText("Average Mastery: 0%");
+        masteryBar->setValue(0);
+        accuracyValueLabel->setText("Overall Accuracy: 0%");
+        completionValueLabel->setText("Exercises Completed: 0 / 0");
         return;
     }
+
+    int totalMastery = 0;
+    int totalExercises = 0;
+    int completedExercises = 0;
+    int totalCorrect = 0;
+    int totalIncorrect = 0;
+    QString topSkillId;
+    int highestMastery = -1;
+    int skillCount = 0;
 
     for (auto it = allProgress.begin(); it != allProgress.end(); ++it) {
         QString skillId = it.key();
         SkillProgress* progress = it.value();
-        
-        if (progress) {
-            QWidget* skillWidget = createSkillItemWidget(skillId, progress);
-            skillsLayout->addWidget(skillWidget);
+        if (!progress) continue;
+
+        ++skillCount;
+        totalMastery += progress->getMasteryLevel();
+        totalExercises += progress->getTotalExercises();
+        completedExercises += progress->getExercisesCompleted();
+        totalCorrect += progress->getCorrectAnswers();
+        totalIncorrect += progress->getIncorrectAnswers();
+
+        if (progress->getMasteryLevel() > highestMastery) {
+            highestMastery = progress->getMasteryLevel();
+            topSkillId = skillId;
         }
+
+        QWidget* skillWidget = createSkillItemWidget(skillId, progress);
+        skillsLayout->addWidget(skillWidget);
+    }
+
+    skillsLayout->addStretch();
+
+    int avgMastery = skillCount > 0 ? totalMastery / skillCount : 0;
+    masteryValueLabel->setText(QString("Average Mastery: %1%").arg(avgMastery));
+    masteryBar->setValue(avgMastery);
+
+    int totalAttempts = totalCorrect + totalIncorrect;
+    double accuracy = totalAttempts > 0 ? (static_cast<double>(totalCorrect) / totalAttempts) * 100.0 : 0.0;
+    accuracyValueLabel->setText(QString("Overall Accuracy: %1%").arg(QString::number(accuracy, 'f', 0)));
+
+    completionValueLabel->setText(QString("Exercises Completed: %1 / %2")
+                                  .arg(completedExercises)
+                                  .arg(totalExercises));
+
+    if (!topSkillId.isEmpty()) {
+        topFocusLabel->setText(QString("Top Focus: %1").arg(formatSkillName(topSkillId)));
+    } else {
+        topFocusLabel->setText("Top Focus: -");
     }
 }
 
 QWidget* ProfileView::createSkillItemWidget(const QString& skillId, SkillProgress* progress) {
-    QWidget* container = new QWidget(this);
+    QFrame* container = new QFrame(this);
     container->setStyleSheet(
-        "QWidget { "
-        "   background-color: white; "
-        "   border-radius: 15px; "
-        "   padding: 20px; "
-        "}"
+        "QFrame { background-color: white; border-radius: 12px; padding: 14px; }"
     );
-
     QVBoxLayout* layout = new QVBoxLayout(container);
-    layout->setSpacing(12);
+    layout->setSpacing(8);
+    layout->setContentsMargins(0, 0, 0, 0);
 
-    // Format skill name
-    QString displayName = skillId;
-    displayName.replace("-", " ");
-    QStringList words = displayName.split(" ");
-    for (int i = 0; i < words.size(); ++i) {
-        if (!words[i].isEmpty()) {
-            words[i] = words[i].at(0).toUpper() + words[i].mid(1);
-        }
-    }
-    displayName = words.join(" ");
+    QLabel* titleLabel = new QLabel(formatSkillName(skillId), container);
+    QFont titleFont;
+    titleFont.setPointSize(14);
+    titleFont.setBold(true);
+    titleLabel->setFont(titleFont);
+    layout->addWidget(titleLabel);
 
-    // Skill name with language badge
-    QHBoxLayout* headerLayout = new QHBoxLayout();
-    
-    QLabel* nameLabel = new QLabel(displayName, container);
-    QFont nameFont;
-    nameFont.setPointSize(14);
-    nameFont.setBold(true);
-    nameLabel->setFont(nameFont);
-    nameLabel->setStyleSheet("QLabel { color: #333; }");
-    headerLayout->addWidget(nameLabel);
-    
-    headerLayout->addStretch();
-    
-    // Language badge
-    QString language = skillId.contains("kannada") ? "Kannada" : "Nepali";
-    QLabel* langBadge = new QLabel(language, container);
-    langBadge->setStyleSheet(
-        "QLabel { "
-        "   background-color: #E3F2FD; "
-        "   color: #2196F3; "
-        "   padding: 3px 10px; "
-        "   border-radius: 10px; "
-        "   font-size: 11px; "
-        "   font-weight: bold; "
-        "}"
-    );
-    headerLayout->addWidget(langBadge);
-    
-    layout->addLayout(headerLayout);
-
-    // Mastery progress bar
     QProgressBar* progressBar = new QProgressBar(container);
     progressBar->setMinimum(0);
     progressBar->setMaximum(100);
     progressBar->setValue(progress->getMasteryLevel());
     progressBar->setTextVisible(true);
-    progressBar->setFormat(QString("%1% Mastery").arg(progress->getMasteryLevel()));
-    progressBar->setMinimumHeight(30);
-    
-    // Color based on mastery level
-    QString progressColor = "#4CAF50";  // Green for > 60%
-    if (progress->getMasteryLevel() < 30) {
-        progressColor = "#F44336";  // Red for < 30%
-    } else if (progress->getMasteryLevel() < 60) {
-        progressColor = "#FF9800";  // Orange for 30-60%
-    }
-    
-    progressBar->setStyleSheet(
-        QString("QProgressBar { "
-        "   border: 2px solid #e0e0e0; "
-        "   border-radius: 15px; "
-        "   text-align: center; "
-        "   background-color: #f5f5f5; "
-        "   font-weight: bold; "
-        "   color: #333; "
-        "} "
-        "QProgressBar::chunk { "
-        "   background-color: %1; "
-        "   border-radius: 13px; "
-        "}").arg(progressColor)
-    );
+    progressBar->setFormat("%p% Mastery");
+    progressBar->setStyleSheet(R"(
+QProgressBar { background-color: #f0f0f0; border-radius: 10px; height: 16px; }
+QProgressBar::chunk { background-color: #23a455; border-radius: 10px; }
+)");
     layout->addWidget(progressBar);
 
-    // Stats row
     QHBoxLayout* statsRow = new QHBoxLayout();
-    statsRow->setSpacing(20);
+    statsRow->setSpacing(8);
 
-    // Completed exercises
     QLabel* completedLabel = new QLabel(
-        QString("📝 %1/%2 Completed").arg(progress->getExercisesCompleted()).arg(progress->getTotalExercises()),
+        QString("%1/%2 Completed").arg(progress->getExercisesCompleted()).arg(progress->getTotalExercises()),
         container
     );
-    completedLabel->setStyleSheet("QLabel { color: #666; font-size: 12px; }");
+    completedLabel->setStyleSheet("color: #555555; font-size: 12px;");
     statsRow->addWidget(completedLabel);
 
     statsRow->addStretch();
 
-    // Accuracy with color coding
     double accuracy = progress->getAccuracy();
-    QString accuracyText = QString("🎯 %1% Accuracy").arg(QString::number(accuracy, 'f', 0));
-    QLabel* accuracyLabel = new QLabel(accuracyText, container);
-    
-    QString accuracyColor = "#4CAF50";  // Green
-    if (accuracy < 60.0) {
-        accuracyColor = "#F44336";  // Red
-    } else if (accuracy < 80.0) {
-        accuracyColor = "#FF9800";  // Orange
-    }
-    
-    accuracyLabel->setStyleSheet(
-        QString("QLabel { color: %1; font-weight: bold; font-size: 12px; }").arg(accuracyColor)
-    );
+    QLabel* accuracyLabel = new QLabel(QString("%1% Accuracy").arg(QString::number(accuracy, 'f', 0)), container);
+    accuracyLabel->setStyleSheet("color: #1a7f4b; font-size: 12px;");
     statsRow->addWidget(accuracyLabel);
 
     layout->addLayout(statsRow);
-    container->setLayout(layout);
-    
+
     return container;
+}
+
+QString ProfileView::formatSkillName(const QString& skillId) const {
+    QString normalized = skillId;
+    normalized.replace("-", " ");
+    normalized.replace("_", " ");
+    QStringList words = normalized.split(' ', Qt::SkipEmptyParts);
+    for (int i = 0; i < words.size(); ++i) {
+        if (!words[i].isEmpty()) {
+            words[i] = words[i].left(1).toUpper() + words[i].mid(1).toLower();
+        }
+    }
+    return words.join(' ');
 }
